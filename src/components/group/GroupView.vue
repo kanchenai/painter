@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
     <div class="group" style="position: absolute;overflow: scroll;" :style="style" @dblclick.stop="editView"
          @mousedown.stop="mousedown" @mousemove.stop="mousemove">
       <div v-for="(child,index) in data.children" :key="index">
@@ -10,6 +9,7 @@
         <base-view v-else :data="child"></base-view>
       </div>
     </div>
+    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
     <div style="position: absolute;overflow: hidden;pointer-events: none;" :style="style" v-show="showReferLine">
       <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index" :style="{left:left+'px'}"></div>
       <div class="h-line" v-for="(top,index) of referLine.hLineList" :key="'h'+index" :style="{top:top+'px'}"></div>
@@ -127,14 +127,7 @@ export default {
     }
   },
 
-  watch: {
-    selected(){
-      console.log(this.selected)
-    }
-  },
-
   created() {
-    console.log("group", this)
   },
 
   methods: {
@@ -167,7 +160,6 @@ export default {
         }
       }
 
-
       this.$painter.mousemove(event);
     }
   },
@@ -185,6 +177,7 @@ export default {
 
 .group::-webkit-scrollbar {
   width: 0;
+  height: 0;
 }
 
 .v-line {

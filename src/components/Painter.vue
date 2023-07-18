@@ -34,9 +34,6 @@ export default {
   },
 
   watch: {
-    mouseIn() {
-      console.log("mouseIn", this.mouseIn)
-    }
   },
 
   created() {
@@ -192,6 +189,7 @@ export default {
     },
 
     mouseleave(event) {
+      console.log("mouseleave")
       this.mouseIn = false;
       this.mouseup(event);
     }
