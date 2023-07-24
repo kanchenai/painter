@@ -7,61 +7,143 @@ Vue.use(Vuex)
 let option = {
     state: {
         // 在这里定义应用程序的状态
-        painterData: {
-            id: 0,
-            type:"group",
-            style: {
-                width: 1280,
-                height: 720,
-            }
-        },
+        viewTreeData: [],
+        viewDetailObj: {},
+
         painterDataId: 0,
         selectDataIdList: [],
     },
+    // 在这里定义 mutations 修改状态的方法
     mutations: {
-        // 在这里定义 mutations 修改状态的方法
-        addPainterChild(state, {id, data}) {
-            let fatherData = utils.getDataById(state.painterData, id);
-            if (!fatherData.children) {
-                Vue.set(fatherData, "children", []);
+        addPage(state, label) {
+            let id = state.painterDataId + "";
+            state.viewTreeData.push({
+                id,
+                label,
+                children: []
+            })
+
+            state.viewDetailObj[id] = {
+                type: "page",
+                style: {
+                    width: 1280,
+                    height: 720,
+                },
             }
-            state.painterDataId++
-            data.id = state.painterDataId;
-            Vue.set(fatherData.children, fatherData.children.length, data);
-            // fatherData.children.push(data);
 
-            state.painterData.__ob__.dep.notify();
+            state.painterDataId++;
         },
 
-        editPainterData(state, {id, data}) {
-            let oldData = utils.getDataById(state.painterData, id);
-            oldData.type = data.type;
-            oldData.props = data.props;
-            oldData.style = data.style;
+        addView(state, {fatherId, data}) {
+            let id = state.painterDataId + "";
+            let {fatherFork, aimFork} = this.getters.getDataById(fatherId);
 
+            if (!aimFork.children) {
+                aimFork.children = [];
+            }
 
-            oldData.__ob__.dep.notify();
+            aimFork.children.push({
+                id,
+                label: data.type,
+                children: []
+            })
+
+            // Vue.set(state.viewDetailObj,id,data)
+
+            state.viewDetailObj[id] = data;
+
+            state.painterDataId++;
+
+            state.viewTreeData.__ob__.dep.notify();
         },
 
-        deletePainterData(state, {fatherId, id}) {
-            let fatherData = utils.getDataById(state.painterData, fatherId);
-            let data = utils.getDataById(state.painterData, id);
+        dragFork(state, {draggingId, dropId, dropType}) {
+            // console.log("{draggingId, dropId, dropType}",{draggingId, dropId, dropType})
 
-            let index = fatherData.children.indexOf(data);
-            fatherData.children.splice(index, 1);
+            let draggingObj = this.getters.getDataById(draggingId);
+            let dropObj = this.getters.getDataById(dropId);
 
-            state.painterData.__ob__.dep.notify();
+            let draggingChildren = null;
+            if (draggingObj.fatherFork.children) {
+                draggingChildren = draggingObj.fatherFork.children;
+            } else {
+                draggingChildren = draggingObj.fatherFork;
+            }
+
+            let draggingIndex = draggingChildren.indexOf(draggingObj.aimFork);
+            // console.log("draggingIndex",draggingIndex)
+            draggingChildren.splice(draggingIndex, 1);//先移除
+
+
+            let dropChildren = null;
+            if (dropObj.fatherFork.children) {
+                dropChildren = dropObj.fatherFork.children;
+            } else {
+                dropChildren = dropObj.fatherFork;
+            }
+
+            let dropIndex = dropChildren.indexOf(dropObj.aimFork);
+            // console.log("dropIndex",dropIndex,JSON.parse(JSON.stringify(dropObj)))
+            switch (dropType) {
+                case "before":
+                    dropChildren.splice(dropIndex, 0, draggingObj.aimFork);
+                    break;
+                case "inner":
+                    if (!dropObj.aimFork.children) {
+                        dropObj.aimFork.children = [];
+                    }
+                    dropObj.aimFork.children.push(draggingObj.aimFork);
+                    break;
+                case "after":
+                    dropChildren.splice(dropIndex + 1, 0, draggingObj.aimFork);
+                    break;
+            }
+
+            state.viewTreeData.__ob__.dep.notify();
+        },
+
+        pushPainterChild(state, {fatherId, data}) {
+        },
+
+        editView(state, {id, data}) {
+            // debugger
+            state.viewDetailObj[id] = data;
+            state.viewDetailObj.__ob__.dep.notify();
+            // console.log(state.viewDetailObj[id])
+        },
+
+        deletePainterData(state, id) {
+            let {fatherFork, aimFork} = this.getters.getDataById(id);
+
+            let children = null;
+            if (fatherFork.children) {
+                children = fatherFork.children;
+            } else {
+                children = fatherFork;//边界Page
+            }
+            let index = children.indexOf(aimFork);
+
+            children.splice(index, 1);
+
+            delete state.viewDetailObj[id];
+
+            state.viewTreeData.__ob__.dep.notify();
+        },
+
+        selectView(state,{id}){
+            state.selectDataIdList = [id];
+            state.selectDataIdList.__ob__.dep.notify();
         }
     },
     getters: {
         // 在这里定义 getters 获取状态的方法
         getDataById: (state) => (id) => {
-            return utils.getDataById(state.painterData, id);
+            return utils.getDataById(state.viewTreeData, id);
         },
-        treeData(state) {
-            console.log(state.painterData)
-            return utils.buildTree(state.painterData);
-        }
+
+        getDetailById: (state) => (id) => {
+            return state.viewDetailObj[id];
+        },
     },
     actions: {
         // 在这里定义 actions 处理异步操作

@@ -11,9 +11,9 @@
       <img v-if="focus" style="position: absolute;pointer-events: none;" :src="focus.props.src"
            :style="{left:disLeft+'px',top:disTop+'px'}" :width="focus.style.width" :height="focus.style.height">
       <div class="focus" v-else
-           :style="{width:width+'px',height:height+'px',background:data.props['focus-color']}"></div>
+           :style="{width:width+'px',height:height+'px',background:detail.props['focus-color']}"></div>
     </div>
-    <div class="text" :style="{lineHeight: height + 'px',color:data.props['value-color']}">{{ text }}</div>
+    <div class="text" :style="{lineHeight: height + 'px',color:detail.props['value-color']}">{{ text }}</div>
   </div>
 </template>
 <script>
@@ -26,6 +26,13 @@ export default {
   },
 
   computed: {
+    detail(){
+      let value = null;
+      if(this.data){
+        value = this.$store.getters.getDetailById(this.data.id);
+      }
+      return value;
+    },
     selected() {
       let flag = false;
       if (this.$store.state.selectDataIdList.indexOf(this.data.id) >= 0) {
@@ -35,15 +42,15 @@ export default {
     },
     width() {
       let value = 120;
-      if (this.data.style && this.data.style.width) {
-        value = this.data.style.width;
+      if (this.detail.style && this.detail.style.width) {
+        value = this.detail.style.width;
       }
       return value;
     },
     height() {
       let value = 60;
-      if (this.data.style && this.data.style.height) {
-        value = this.data.style.height;
+      if (this.detail.style && this.detail.style.height) {
+        value = this.detail.style.height;
       }
 
       return value;
@@ -51,53 +58,48 @@ export default {
     left() {
       let value = 0;
 
-      if (this.data.style && this.data.style.left) {
-        value = this.data.style.left;
+      if (this.detail.style && this.detail.style.left) {
+        value = this.detail.style.left;
       }
 
       return value;
     },
     top() {
       let value = 0;
-      if (this.data.style && this.data.style.top) {
-        value = this.data.style.top;
+      if (this.detail.style && this.detail.style.top) {
+        value = this.detail.style.top;
       }
       return value;
     },
 
     style() {
       let value = {}
-      // let focusEnlarge = this.data.props["focus-enlarge"];
+      // let focusEnlarge = this.detail.props["focus-enlarge"];
       // if (focusEnlarge != 100 && focusEnlarge != 0) {
       //   value.transform = "scale(" + focusEnlarge + "%)"
       // }
 
       value.width = this.width + 'px';
       value.height = this.height + 'px';
-      if (this.focus) {
-        if (this.disLeft < 0) {//有定制焦点的一般情况
-          let left = this.left + this.disLeft;
-          if (left < 0) {
-            value.left = -this.disLeft + 'px';
-          } else {
-            value.left = this.left + 'px';
-          }
+      if (this.disLeft < 0) {//有定制焦点的一般情况
+        let left = this.left + this.disLeft;
+        if (left < 0) {
+          value.left = -this.disLeft + 'px';
         } else {
           value.left = this.left + 'px';
         }
+      } else {
+        value.left = this.left + 'px';
+      }
 
-        if (this.disTop < 0) {
-          let top = this.top + this.disTop;
-          if (top < 0) {
-            value.top = -this.disTop + 'px';
-          } else {
-            value.top = this.top + 'px';
-          }
+      if (this.disTop < 0) {
+        let top = this.top + this.disTop;
+        if (top < 0) {
+          value.top = -this.disTop + 'px';
         } else {
           value.top = this.top + 'px';
         }
       } else {
-        value.left = this.left + 'px';
         value.top = this.top + 'px';
       }
       return value;
@@ -127,8 +129,8 @@ export default {
 
     text() {
       let value = "";
-      if (this.data.props && this.data.props.value) {
-        value = this.data.props.value;
+      if (this.detail.props && this.detail.props.value) {
+        value = this.detail.props.value;
       }
 
       return value;
@@ -136,8 +138,8 @@ export default {
 
     focus() {
       let value = null;
-      if (this.data.children && this.data.children.length > 0) {
-        for (let child of this.data.children) {
+      if (this.detail.children && this.detail.children.length > 0) {
+        for (let child of this.detail.children) {
           if (child.id == "focus") {
             value = child;
             break;
@@ -167,14 +169,16 @@ export default {
     },
 
     mousedown(event) {
-      this.downEvent = event;
       this.$painter.mousedown(event, this);
 
-      this.$store.state.selectDataIdList = [this.data.id];
-      this.$store.state.selectDataIdList.__ob__.dep.notify();
+      this.$store.commit("selectView",{id:this.data.id});
     },
     mousemove(event) {
       let downType = utils.judgeDownType(event, this);
+      if (!downType) {
+        event.target.style.cursor = "auto";
+        return;
+      }
       if (downType == "move") {
         event.target.style.cursor = "pointer";
       } else {

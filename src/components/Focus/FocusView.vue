@@ -1,0 +1,185 @@
+<template>
+  <div>
+    <div class="focus" style="position: absolute;" :style="style" @dblclick.stop="editView"
+         @mousedown.stop="mousedown" @mousemove.stop="mousemove">
+      <div v-for="(child,index) in data.children" :key="index">
+        <base-view :data="child"></base-view>
+      </div>
+    </div>
+
+<!--    <div style="position: absolute" v-show="selected">-->
+<!--      <img v-if="focus" style="position: absolute;pointer-events: none;" :src="focus.props.src"-->
+<!--           :style="{left:disLeft+'px',top:disTop+'px'}" :width="focus.style.width" :height="focus.style.height">-->
+<!--      <div class="focus" v-else-->
+<!--           :style="{width:width+'px',height:height+'px',background:detail.props['focus-color']}"></div>-->
+<!--    </div>-->
+  </div>
+</template>
+<script>
+
+import BaseView from "@/components/base/BaseView.vue";
+import utils from "@/utils/utils";
+
+/**
+ * 只用来布局
+ */
+export default {
+  name: "FocusView",
+  props: {
+    data: Object
+  },
+
+  computed: {
+    detail(){
+      let value = null;
+      if(this.data){
+        value = this.$store.getters.getDetailById(this.data.id);
+      }
+      return value;
+    },
+
+    left() {
+      let value = 0;
+
+      if (this.detail.style && this.detail.style.left) {
+        value = this.detail.style.left;
+      }
+
+      return value;
+    },
+    top() {
+      let value = 0;
+      if (this.detail.style && this.detail.style.top) {
+        value = this.detail.style.top;
+      }
+      return value;
+    },
+    width() {
+      let value = 120;
+      if (this.detail.style && this.detail.style.width) {
+        value = this.detail.style.width;
+      }
+      return value;
+    },
+    height() {
+      let value = 60;
+      if (this.detail.style && this.detail.style.height) {
+        value = this.detail.style.height;
+      }
+
+      return value;
+    },
+    style() {
+      let value = {}
+
+      value.width = this.width + 'px';
+      value.height = this.height + 'px';
+
+      if (this.disLeft < 0) {//有定制焦点的一般情况
+        let left = this.left + this.disLeft;
+        if (left < 0) {
+          value.left = -this.disLeft + 'px';
+        } else {
+          value.left = this.left + 'px';
+        }
+      } else {
+        value.left = this.left + 'px';
+      }
+
+      if (this.disTop < 0) {
+        let top = this.top + this.disTop;
+        if (top < 0) {
+          value.top = -this.disTop + 'px';
+        } else {
+          value.top = this.top + 'px';
+        }
+      } else {
+        value.top = this.top + 'px';
+      }
+
+      value.background = this.detail.style.background;
+
+      return value;
+    },
+
+    /**focus的校准，一般小于0*/
+    disLeft() {
+      let value = 0;
+      if (this.focus) {
+        let width = this.focus.style.width;
+        value = (this.width - width) / 2;
+      }
+
+      return value;
+    },
+
+    /**focus的校准，一般小于0*/
+    disTop() {
+      let value = 0;
+      if (this.focus) {
+        let height = this.focus.style.height;
+        value = (this.height - height) / 2;
+      }
+
+      return value;
+    },
+
+    focus() {
+      let value = null;
+      if (this.data.children && this.data.children.length > 0) {
+        for (let child of this.data.children) {
+          let detail = this.$store.getters.getDetailById(child.id)
+          if (detail.props && detail.props.id == "focus") {
+            value = detail;
+            break;
+          }
+        }
+      }
+      return value;
+    },
+
+    selected() {
+      let flag = false;
+      if(this.$store.state.selectDataIdList.indexOf(this.data.id)>=0){
+        flag = true;
+      }
+      return flag;
+    },
+  },
+
+  watch:{
+  },
+
+  methods: {
+    editView() {
+      this.$dialogViewEditor.editShow(this.data.id);
+    },
+
+    mousedown(event) {
+      this.$painter.mousedown(event, this);
+      this.$store.commit("selectView",{id:this.data.id});
+    },
+    mousemove(event) {
+      let downType = utils.judgeDownType(event, this);
+      if (!downType) {
+        event.target.style.cursor = "auto";
+        return;
+      }
+      if (downType == "move") {
+        event.target.style.cursor = "pointer";
+      } else {
+        if (downType.indexOf("left") >= 0 || downType.indexOf("right") >= 0) {
+          event.target.style.cursor = "ew-resize";
+        } else {
+          event.target.style.cursor = "ns-resize";
+        }
+      }
+      this.$painter.mousemove(event);
+    },
+  },
+
+  components: { BaseView}
+}
+</script>
+<style scoped>
+</style>

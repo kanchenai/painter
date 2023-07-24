@@ -1,6 +1,12 @@
 <template>
   <el-form ref="form" size="mini" label-width="150px">
-    <el-form-item label="坐标(left,top)">
+    <el-form-item label="焦点" v-if="isFocusSetting">
+      <el-radio-group style="width: 100%;" v-model="data.props.id">
+        <el-radio style="float: left;" :label="'focus'">是</el-radio>
+        <el-radio style="float: left;" :label="''">否</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="坐标(left,top)" v-if="data.props.id==''">
       <el-col :span="11">
         <el-input v-model="data.style.left" type="number" placeholder="left"></el-input>
       </el-col>
@@ -30,7 +36,7 @@
                    :auto-upload="false"
                    :file-list="picList"
                    list-type="picture"
-                   :on-change="changeBgPic">
+                   :on-change="changePic">
           <div style="width: 100%;float: left;">
             <el-button style="float: left;" type="primary" size="mini">选择</el-button>
             <div slot="tip" class="el-upload__tip" style="float: left;margin-left: 10px;">
@@ -44,10 +50,13 @@
 </template>
 <script>
 
+import utils from "@/utils/utils";
+
 export default {
   name: "ButtonConfig",
   props: {
-    type: String
+    type: String,
+    fatherDataId: String
   },
   data() {
     return {
@@ -61,15 +70,42 @@ export default {
         },
         props: {
           src: "",
+          id: ""
         },
       },
-      picList: []
+      picList: [],
+    }
+  },
+
+  computed: {
+    fatherDetail() {
+      return this.$store.getters.getDetailById(this.fatherDataId);
+    },
+
+    isFocusSetting() {
+      let flag = false;
+      let fatherType = this.fatherDetail.type;
+      if (this.type == "img" && (fatherType == "focus" || fatherType == "button")) {
+        flag = true;
+      }
+
+      return flag;
+    }
+  },
+
+  watch: {
+    type() {
+      this.data.props.id = "";
     }
   },
 
   methods: {
-    changeBgPic(file, fileList) {
+    async changePic(file, fileList) {
       this.data.props.src = URL.createObjectURL(file.raw);
+
+      let {width, height} = await utils.getImageSize(file);
+      this.data.style.width = width;
+      this.data.style.height = height;
     },
 
     /**
@@ -78,8 +114,13 @@ export default {
     setData(data) {
       this.data.style = {...data.style};
       if (this.type == "img") {
-        this.data.props.src = data.props.src;
-        this.picList = [{name: "", url: this.data.props.src}]
+        this.data.props = {...data.props}
+        if (this.data.props.src) {
+          this.picList = [{name: "", url: this.data.props.src}]
+        } else {
+          this.picList = []
+        }
+
       }
     },
 

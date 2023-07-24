@@ -4,16 +4,61 @@
  */
 let sizeComponent = ["button"];
 
-let getDataById = function (painterData, id) {
+
+let getDataById = function (treeData, id) {
+    let fatherFork = null;
+    let aimFork = null;
+    for (let forkData of treeData) {
+        let obj = getForkById(treeData, forkData, id);
+        if (obj.aimFork) {
+            aimFork = obj.aimFork;
+            fatherFork = obj.fatherFork;
+        }
+    }
+
+    return {fatherFork, aimFork};
+}
+
+let getForkById = function (fatherFork, fork, id) {
+    let aimFork = null;
+    if (fork.id == id) {
+        aimFork = fork;
+    } else {
+        if (fork.children && fork.children.length > 0) {
+            for (let childFork of fork.children) {
+                let obj = getForkById(fork, childFork, id);
+
+                if (obj.aimFork) {
+                    aimFork = obj.aimFork;
+                    fatherFork = obj.fatherFork;
+                    break;
+                }
+            }
+        }
+    }
+
+    return {fatherFork, aimFork}
+}
+
+let dragData = function (painterData, fromId, toId, dropType) {
+    //删除fromId
+    let fromData = removeData(painterData, fromId);
+    //insert或push toId
+
+
+}
+
+let removeData = function (painterData, id) {
     let data = null;
     if (painterData.id == id) {
         data = painterData;
     } else {
         let children = painterData.children;
         if (children) {
-            for (let child of children) {
-                data = getDataById(child, id);
+            for (let i = 0; i < children.length; i++) {
+                data = removeData(children[i], id);
                 if (data) {
+                    children.splice(i, 1);
                     break;
                 }
             }
@@ -21,6 +66,10 @@ let getDataById = function (painterData, id) {
     }
 
     return data;
+}
+
+let insertData = function (toId, dropType, data) {
+
 }
 
 let buildTree = function (painterData) {
@@ -44,13 +93,13 @@ let buildChildTree = function (child, id) {
         children: []
     }
 
-    data.label = (child.type ? child.type : "div");
+    data.label = child.id + " " + (child.type ? child.type : "div");
 
     if (child.props && child.props.value) {
         data.label = child.props.value;
     }
 
-    if(child.type == "group"){
+    if (child.type == "group") {
         let grandchildren = child.children;
         if (grandchildren) {
             grandchildren.forEach((grandchild, index) => {
@@ -60,7 +109,6 @@ let buildChildTree = function (child, id) {
             })
         }
     }
-
 
 
     return data;

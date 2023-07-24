@@ -6,8 +6,8 @@ let data = {
                 src: require("./assets/bg.jpg")
             },
             style: {
-                width: "1280px",
-                height: "720px",
+                width: "1280",
+                height: "720",
             },
         },
         {
@@ -16,63 +16,115 @@ let data = {
                 src: require("./assets/logo.png")
             },
             style: {
-                width: "50px",
-                height: "50px",
-                left: "40px",
-                top: "30px",
+                width: "50",
+                height: "50",
+                left: "40",
+                top: "30",
             },
         },
         {
             style: {
-                width: "1280px",
-                height: "1px",
-                top: "100px",
-                background:"gray"
+                width: "1280",
+                height: "1",
+                top: "100",
+                background: "gray"
             },
         },
         {
             type: "text",
             props: {
-                value:"这是一个标题"
+                value: "这是一个标题"
             },
             style: {
-                width: "50px",
-                height: "50px",
-                left: "40px",
-                top: "120px",
+                width: "50",
+                height: "50",
+                left: "40",
+                top: "120",
             },
         },
         {
             type: "group",
             style: {
-                width: "1280px",
-                height: "350px",
-                top: "150px",
+                width: "1280",
+                height: "350",
+                top: "150",
             },
-            children:[
+            children: [
                 {
                     type: "button",
                     props: {
-                        value:"按钮1"
+                        value: "按钮1"
                     },
                     style: {
-                        left: "50px",
-                        top: "50px",
+                        left: "50",
+                        top: "50",
                     },
                 },
                 {
                     type: "button",
                     props: {
-                        value:"按钮2"
+                        value: "按钮2"
                     },
                     style: {
-                        left: "250px",
-                        top: "50px",
+                        left: "250",
+                        top: "50",
                     },
                 },
             ]
         }
     ]
 }
+
+let treeData = [
+    {
+        id: 1,
+        label: "HomePage",
+        children: [
+            {}
+        ]
+    },
+    {
+        id: 2,
+        label: "DetailPage",
+        children: [
+            {}
+        ]
+    },
+    {
+        id: 3,
+        label: "ListPage",
+        children: [
+            {}
+        ]
+    },
+];
+
+
+let configMap = new Map();
+
+configMap.set(1, {
+    type: "group",
+    style: {
+        width: 1280,
+        height: 720,
+    }
+})
+
+configMap.set(2, {
+    type: "group",
+    style: {
+        width: 1280,
+        height: 720,
+    }
+})
+
+configMap.set(3, {
+    type: "group",
+    style: {
+        width: 1280,
+        height: 720,
+    }
+})
+
 
 export default data;

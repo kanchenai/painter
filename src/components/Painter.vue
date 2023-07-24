@@ -12,10 +12,13 @@
 import GroupView from "@/components/group/GroupView.vue";
 import Vue from "vue";
 import utils from "@/utils/utils";
-import * as events from "events";
 
 export default {
   name: "Painter",
+
+  props: {
+    pageId: String
+  },
 
   data() {
     return {
@@ -29,14 +32,21 @@ export default {
 
   computed: {
     data() {
-      return this.$store.state.painterData;
+      let value = null;
+      if (this.pageId) {
+        let {aimFork} = this.$store.getters.getDataById(this.pageId);
+        if (aimFork) {
+          value = aimFork;
+        }
+      }
+      return value;
     }
   },
 
-  watch: {
-  },
+  watch: {},
 
   created() {
+    window.painter = this;
     Vue.prototype.$painter = this;
 
     this.initKeydown();
@@ -88,7 +98,7 @@ export default {
     },
 
     mousemove(event) {
-      if (!this.operateComponent || !this.downEvent) {
+      if (!this.operateComponent || !this.downEvent || !this.downType) {
         return;
       }
       this.operateComponent.$parent.showReferLine = true;
@@ -170,12 +180,13 @@ export default {
         }
       }
 
-      let data = {...this.operateComponent.data};
-      data.style.width = width;
-      data.style.height = height;
-      data.style.left = left;
-      data.style.top = top;
-      this.$store.commit("editPainterData", {id: data.id, data})
+      let id = this.operateComponent.data.id
+      let detail = this.$store.getters.getDetailById(id);
+      detail.style.width = width;
+      detail.style.height = height;
+      detail.style.left = left;
+      detail.style.top = top;
+      this.$store.commit("editView", {id, data:detail})
     },
 
     mouseup(event) {
@@ -189,7 +200,6 @@ export default {
     },
 
     mouseleave(event) {
-      console.log("mouseleave")
       this.mouseIn = false;
       this.mouseup(event);
     }

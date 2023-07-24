@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <div style="position: absolute;overflow: hidden;" v-if="type!='img'" :style="style" @dblclick.stop="editView"
-         @mousedown.stop="mousedown" @mousemove.stop="mousemove">
+  <div v-show="!isFocus || $store.state.selectDataIdList.indexOf(fatherDataId)>=0">
+    <div style="position: absolute;overflow: hidden;" v-if="type!='img'" :style="style" @dblclick="editView"
+         @mousedown="mousedown" @mousemove="mousemove">
     </div>
-    <div style="position: absolute;" v-else :style="style" @dblclick.stop="editView"
-         @mousedown.stop="mousedown" @mousemove.stop="mousemove">
+    <div style="position: absolute;" v-else :style="style" @dblclick="editView"
+         @mousedown="mousedown" @mousemove="mousemove">
       <img style="pointer-events: none;" :src="src" :style="{width:style.width,height:style.height}">
     </div>
   </div>
@@ -23,40 +23,77 @@ export default {
   },
 
   computed: {
-    type() {
-      let value = "div";
-      if (this.data.type) {
-        value = this.data.type;
+    fatherDataId() {
+      let {fatherFork} = this.$store.getters.getDataById(this.data.id);
+      return fatherFork.id
+    },
+    fatherDetail() {
+      let value = null;
+      value = this.$store.getters.getDetailById(this.fatherDataId);
+      return value;
+    },
+    detail() {
+      let value = null;
+      if (this.data) {
+        value = this.$store.getters.getDetailById(this.data.id);
       }
       return value;
     },
+    type() {
+      let value = "div";
+      if (this.detail.type) {
+        value = this.detail.type;
+      }
+      return value;
+    },
+
+    isFocus() {
+      let flag = false;
+      if (this.detail.type == "img" && this.detail.props.id == "focus") {
+        flag = true;
+      }
+
+      return flag;
+    },
+
     left() {
       let value = 0;
 
-      if (this.data.style && this.data.style.left) {
-        value = this.data.style.left;
+      if (!this.isFocus) {
+        if (this.detail.style && this.detail.style.left) {
+          value = this.detail.style.left;
+        }
+      } else {
+        let fatherWidth = this.fatherDetail.style.width;
+        value = (fatherWidth - this.width) / 2;
       }
 
       return value;
     },
     top() {
       let value = 0;
-      if (this.data.style && this.data.style.top) {
-        value = this.data.style.top;
+      if (!this.isFocus) {
+        if (this.detail.style && this.detail.style.top) {
+          value = this.detail.style.top;
+        }
+      } else {
+        let fatherHeight = this.fatherDetail.style.height;
+        value = (fatherHeight - this.height) / 2;
       }
+
       return value;
     },
     width() {
       let value = 0;
-      if (this.data.style && this.data.style.width) {
-        value = this.data.style.width;
+      if (this.detail.style && this.detail.style.width) {
+        value = this.detail.style.width;
       }
       return value;
     },
     height() {
       let value = 0;
-      if (this.data.style && this.data.style.height) {
-        value = this.data.style.height;
+      if (this.detail.style && this.detail.style.height) {
+        value = this.detail.style.height;
       }
 
       return value;
@@ -68,26 +105,36 @@ export default {
       value.height = this.height + 'px';
 
       let left = this.left;
-      if (left < 0) {
-        left = 0;
+      if (!this.isFocus) {
+        if (left < 0) {
+          left = 0;
+        }
       }
+
       value.left = left + "px";
 
       let top = this.top;
-      if (top < 0) {
-        top = 0;
+      if (!this.isFocus) {
+        if (top < 0) {
+          top = 0;
+        }
       }
+
       value.top = top + "px";
 
-      value.background = this.data.style.background;
+      value.background = this.detail.style.background;
+
+      if (this.isFocus) {
+        value.pointerEvents = "none";
+      }
 
       return value;
     },
     src() {
       let value = "";
 
-      if (this.data.props && this.data.props.src) {
-        value = this.data.props.src;
+      if (this.detail.props && this.detail.props.src) {
+        value = this.detail.props.src;
       }
 
       return value;
@@ -96,29 +143,44 @@ export default {
 
   methods: {
     editView() {
-      this.$dialogViewEditor.editShow(this.data.id);
+      if (this.isFocus || utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
+
+      } else {
+        this.$dialogViewEditor.editShow(this.data.id);
+      }
     },
 
     mousedown(event) {
-      this.downEvent = event;
+      if (this.isFocus  || utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
 
-      this.$painter.mousedown(event, this);
-      console.log("mousedown", this.data.id)
-      this.$set(this.$store.state.selectDataIdList, 0, this.data.id);
+      } else {
+        event.stopPropagation();
+        this.$painter.mousedown(event, this);
+        this.$store.commit("selectView",{id:this.data.id});
+      }
     },
     mousemove(event) {
-      let downType = utils.judgeDownType(event, this);
-      if (downType == "move") {
-        event.target.style.cursor = "pointer";
-      } else {
-        if (downType.indexOf("left") >= 0 || downType.indexOf("right") >= 0) {
-          event.target.style.cursor = "ew-resize";
-        } else {
-          event.target.style.cursor = "ns-resize";
-        }
-      }
+      if (this.isFocus || utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
 
-      this.$painter.mousemove(event);
+      } else {
+        event.stopPropagation();
+        let downType = utils.judgeDownType(event, this);
+        if (!downType) {
+          event.target.style.cursor = "auto";
+          return;
+        }
+        if (downType == "move") {
+          event.target.style.cursor = "pointer";
+        } else {
+          if (downType.indexOf("left") >= 0 || downType.indexOf("right") >= 0) {
+            event.target.style.cursor = "ew-resize";
+          } else {
+            event.target.style.cursor = "ns-resize";
+          }
+        }
+
+        this.$painter.mousemove(event);
+      }
     }
   },
 }

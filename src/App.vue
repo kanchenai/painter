@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <el-container>
-      <el-aside style="padding: 0;height: 100%;overflow-y: hidden" width="200px">
-        <view-builder></view-builder>
+      <el-aside style="padding: 0;height: 100%;overflow-y: hidden" width="250px">
+        <view-builder @changePage="changePage"></view-builder>
       </el-aside>
       <el-main style="padding: 0">
-        <painter></painter>
+        <painter :pageId="currentPageId"></painter>
       </el-main>
     </el-container>
   </div>
@@ -19,10 +19,19 @@ export default {
   name: 'App',
 
   data() {
-    return {}
+    return {
+      currentPageId: ""
+    }
   },
 
   created() {
+  },
+
+  methods: {
+    changePage(id) {
+      console.log("changePage", id)
+      this.currentPageId = id;
+    }
   },
 
   components: {

@@ -1,0 +1,75 @@
+<template>
+  <el-dialog
+      :title="title"
+      :visible.sync="visible"
+      v-if="visible"
+      width="50%">
+    <el-form ref="form" size="mini" label-width="150px">
+      <el-form-item label="页面名">
+        <el-input ref="labelInput" v-model="label"></el-input>
+      </el-form-item>
+      <!--      <el-form-item label="背景颜色">-->
+      <!--        <el-color-picker style="float: left;" v-model="data.style.background"></el-color-picker>-->
+      <!--        <div style="float: left;margin-left: 10px;">{{ data.style.background }}</div>-->
+      <!--      </el-form-item>-->
+    </el-form>
+    <div style="width: 100%">
+      <el-button type="primary" size="mini" @click="submit">确认</el-button>
+      <el-button size="mini" @click="visible=false">取消</el-button>
+    </div>
+  </el-dialog>
+</template>
+<script>
+import Vue from "vue";
+
+export default {
+  name: "DialogPageEditor",
+  data() {
+    return {
+      visible: false,
+      title: "",
+      editType: "",
+      label: "",
+
+      dataId: "",
+    }
+  },
+
+  methods: {
+    addShow() {
+      this.visible = true;
+      this.editType = "add";
+      this.title = "新增页面";
+      this.label = "";
+
+      this.$nextTick(()=>{
+        this.$refs.labelInput.focus();
+      })
+    },
+
+    editShow(id) {
+      this.visible = true;
+      this.editType = "edit";
+      this.dataId = id;
+
+      this.title = "编辑页面";
+    },
+
+    submit() {
+      if (this.editType == "add") {
+        this.$store.commit("addPage", this.label)
+      } else {
+        // this.$store.commit("editView", {id: this.dataId, data})
+      }
+
+      this.visible = false;
+    },
+
+  },
+
+  components: {
+  }
+}
+</script>
+<style scoped>
+</style>

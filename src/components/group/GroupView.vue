@@ -3,9 +3,10 @@
     <div class="group" style="position: absolute;overflow: scroll;" :style="style" @dblclick.stop="editView"
          @mousedown.stop="mousedown" @mousemove.stop="mousemove">
       <div v-for="(child,index) in data.children" :key="index">
-        <button-view v-if="child.type=='button'" :data="child"></button-view>
-        <text-view v-else-if="child.type=='text'" :data="child"></text-view>
-        <group-view v-else-if="child.type=='group'" :data="child"></group-view>
+        <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
+        <focus-view v-else-if="getDetailById(child.id).type=='focus'" :data="child"></focus-view>
+        <button-view v-else-if="getDetailById(child.id).type=='button'" :data="child"></button-view>
+        <text-view v-else-if="getDetailById(child.id).type=='text'" :data="child"></text-view>
         <base-view v-else :data="child"></base-view>
       </div>
     </div>
@@ -23,6 +24,7 @@ import ButtonView from "@/components/button/ButtonView.vue";
 import TextView from "@/components/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
 import utils from "@/utils/utils";
+import FocusView from "@/components/Focus/FocusView.vue";
 
 /**
  * 只用来布局
@@ -40,33 +42,41 @@ export default {
   },
 
   computed: {
+    detail(){
+      let value = null;
+      if(this.data){
+        value = this.$store.getters.getDetailById(this.data.id);
+      }
+      return value;
+    },
+
     left() {
       let value = 0;
 
-      if (this.data.style && this.data.style.left) {
-        value = this.data.style.left;
+      if (this.detail.style && this.detail.style.left) {
+        value = this.detail.style.left;
       }
 
       return value;
     },
     top() {
       let value = 0;
-      if (this.data.style && this.data.style.top) {
-        value = this.data.style.top;
+      if (this.detail.style && this.detail.style.top) {
+        value = this.detail.style.top;
       }
       return value;
     },
     width() {
       let value = 120;
-      if (this.data.style && this.data.style.width) {
-        value = this.data.style.width;
+      if (this.detail.style && this.detail.style.width) {
+        value = this.detail.style.width;
       }
       return value;
     },
     height() {
       let value = 60;
-      if (this.data.style && this.data.style.height) {
-        value = this.data.style.height;
+      if (this.detail.style && this.detail.style.height) {
+        value = this.detail.style.height;
       }
 
       return value;
@@ -89,7 +99,7 @@ export default {
       }
       value.top = top + "px";
 
-      value.background = this.data.style.background;
+      value.background = this.detail.style.background;
 
       return value;
     },
@@ -102,11 +112,13 @@ export default {
           if(this.$store.state.selectDataIdList.indexOf(child.id) >= 0){
             return;
           }
-          let left = child.style.left;
-          let right = child.style.left+child.style.width;
+          let childDetail = this.$store.getters.getDetailById(child.id)
 
-          let top = child.style.top;
-          let bottom = child.style.top + child.style.height;
+          let left = childDetail.style.left;
+          let right = childDetail.style.left+childDetail.style.width;
+
+          let top = childDetail.style.top;
+          let bottom = childDetail.style.top + childDetail.style.height;
 
           value.vLineList.push(left);
           value.vLineList.push(right);
@@ -127,28 +139,35 @@ export default {
     }
   },
 
+  watch:{
+  },
+
   created() {
   },
 
   methods: {
     editView() {
-      if(this.data.id == 0){
+      if(this.detail.type != "group"){
         return;
       }
       this.$dialogViewEditor.editShow(this.data.id);
     },
 
     mousedown(event) {
-      if(this.data.id == 0){
+      if(this.detail.type != "group"){
         this.$set(this.$store.state, "selectDataIdList", []);
       }else{
         this.$painter.mousedown(event, this);
-        this.$set(this.$store.state.selectDataIdList, 0, this.data.id);
+        this.$store.commit("selectView",{id:this.data.id});
       }
     },
     mousemove(event) {
-      if(this.data.id != 0){
+      if(this.detail.type == "group"){
         let downType = utils.judgeDownType(event, this);
+        if (!downType) {
+          event.target.style.cursor = "auto";
+          return;
+        }
         if (downType == "move") {
           event.target.style.cursor = "pointer";
         } else {
@@ -161,10 +180,14 @@ export default {
       }
 
       this.$painter.mousemove(event);
+    },
+
+    getDetailById(id) {
+      return this.$store.getters.getDetailById(id);
     }
   },
 
-  components: {TextView, ButtonView, BaseView}
+  components: {FocusView, TextView, ButtonView, BaseView}
 }
 </script>
 <style scoped>
