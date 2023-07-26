@@ -29,7 +29,7 @@
     </el-form-item>
     <el-form-item label="背景颜色" v-if="type!='img'">
       <el-color-picker style="float: left;" v-model="data.style.background"></el-color-picker>
-      <div style="float: left;margin-left: 10px;">{{ data.style.background||"透明" }}</div>
+      <div style="float: left;margin-left: 10px;">{{ data.style.background || "透明" }}</div>
     </el-form-item>
     <el-form-item label="图片" v-if="type=='img'">
       <div style="width: 100%;">
@@ -98,8 +98,14 @@ export default {
   },
 
   watch: {
-    type() {
-      this.data.props.id = "";
+    type: {
+      handler() {
+        this.data.props.id = "";
+        if (this.type == "img" && this.data.style.borderRadius == 0) {
+          this.data.style.borderRadius = 7;
+        }
+      },
+      immediate: true
     },
 
     "data.props.id": {

@@ -49,13 +49,13 @@ export default {
     return {
       data: {
         style: {
-          width: 20,
-          height: 14,
+          width: 150,
+          height: 30,
           left: 0,
           top: 0,
           background: "",
           color: "#ffffff",
-          fontSize: 12,
+          fontSize: 18,
           whiteSpace: "nowrap",
           overflow: "hidden",
           textAlign: "left",

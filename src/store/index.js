@@ -141,17 +141,37 @@ let option = {
             state.copyDataIdList = [...state.selectDataIdList];
         },
 
-        pasteView(state) {
-            state.selectDataIdList.forEach(selectedId => {
-                state.copyDataIdList.filter(copyId => {
+        pasteView(state, info) {
+            let copyDataIdList = [];
+            let toDataIdList = [];
+            if (!info) {
+                copyDataIdList = state.copyDataIdList;
+                toDataIdList = state.selectDataIdList;
+            } else {
+                copyDataIdList = info.copyDataIdList;
+                toDataIdList = info.toDataIdList;
+            }
+
+            toDataIdList.forEach(toDataId => {
+                copyDataIdList.filter(copyId => {
                     let detail = this.getters.getDetailById(copyId);
                     let {aimFork} = this.getters.getDataById(copyId);
                     detail = JSON.parse(JSON.stringify(detail));
-                    this.commit("addView", {fatherId: selectedId, data: detail, name: aimFork.label});
-                    //todo error 无法复制内部控件
+                    this.commit("addView", {fatherId: toDataId, data: detail, name: aimFork.label});
 
-                    let obj = this.getters.getDataById(selectedId);
-                    console.log(obj.aimFork.children[obj.aimFork.children.length - 1].id)
+                    //复制内部控件
+                    if (aimFork.children && aimFork.children.length > 0) {
+                        let obj = this.getters.getDataById(toDataId);
+                        let childId = obj.aimFork.children[obj.aimFork.children.length - 1].id
+                        // console.log(childId);
+                        let idList = [];
+                        aimFork.children.forEach(data => {
+                            idList.push(data.id);
+                        })
+                        this.commit("pasteView", {copyDataIdList: idList, toDataIdList: [childId]});
+                    }
+
+
                 })
             })
         }

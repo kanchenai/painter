@@ -169,24 +169,25 @@ export default {
     },
 
     buildPage(id) {
-      let pageData = this.$store.getters.getDataById(id);
-      console.log(pageData);
-      // let ele = utils.buildPage(pageData,this.$store.state.viewDetailMap);
-      // console.log(ele);
-      //
-      // let html = '<template>' +
-      //     ele.innerHTML
-      //     + '</template>'
-      //
-      // this.$alert('根据当前布局生成一个页面', '提示', {
-      //   confirmButtonText: '确定',
-      //   callback: action => {
-      //     console.log(action)
-      //     if (action == "confirm") {
-      //       utils.writeFile("test", html, "html");
-      //     }
-      //   }
-      // });
+      let {aimFork} = this.$store.getters.getDataById(id);
+      let viewDetailObj = this.$store.state.viewDetailObj;
+      console.log(aimFork);
+      let ele = utils.buildLayout(aimFork, viewDetailObj);
+      console.log(ele);
+
+      let html = '<template>' +
+          ele.innerHTML
+          + '</template>'
+
+      this.$alert('布局生成一个'+aimFork.label+'页面', '提示', {
+        confirmButtonText: '确定',
+        callback: action => {
+          console.log(action)
+          if (action == "confirm") {
+            utils.writeFile(aimFork.label, html, "html");
+          }
+        }
+      });
     },
 
     currentChange(data, node) {
@@ -200,14 +201,13 @@ export default {
     },
 
     allowDrop(draggingNode, dropNode, type) {
+      console.log({draggingNode, dropNode, type})
       let flag = true;
       if (!dropNode) {
-        console.log(dropNode)
         flag = false;
       } else {
         let draggingDetail = this.$store.getters.getDetailById(draggingNode.data.id);
         let dropDetail = this.$store.getters.getDetailById(dropNode.data.id);
-
         if (type == "inner") {
           if (draggingDetail.type == "page") {
             flag = false;
@@ -219,15 +219,19 @@ export default {
         } else if (type == "none") {
           flag = false;
         } else {
-          if (draggingDetail.type == "page" && dropDetail.type == "page") {
-            flag = true;
+          if (draggingDetail.type == "page") {
+            if(dropDetail.type == "page"){
+              flag = true;
+            }
           } else {
-            flag = false;
+            if(dropDetail.type != "page"){
+              flag = true;
+            }
           }
         }
       }
 
-
+      console.log("allowDrop",flag);
       return flag;
     },
 
@@ -269,7 +273,7 @@ export default {
     },
 
     paste() {
-      if(this.$store.state.selectDataIdList.length == 0){
+      if (this.$store.state.selectDataIdList.length == 0) {
         return;
       }
       let itemList_1 = this.$store.state.selectDataIdList.filter(id => {

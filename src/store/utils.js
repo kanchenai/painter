@@ -39,77 +39,26 @@ let getForkById = function (fatherFork, fork, id) {
     return {fatherFork, aimFork}
 }
 
-let buildTree = function (painterData) {
-    let data = [];
 
-    let children = painterData.children;
-    if (children) {
-        children.forEach((child, index) => {
-            data.push(buildChildTree(child, index + 1));
-        })
-    }
-
-    return data;
-}
-
-let pasteBy = function (viewTreeData, viewDetailObj, selectDataIdList, copyDataIdList) {
-
-}
-
-let pasteFromTo = function (){
-
-}
-
-let buildChildTree = function (child, id) {
-    let data = {
-        id: child.id,
-        label: "",
-        type: child.type,
-        children: []
-    }
-
-    data.label = child.id + " " + (child.type ? child.type : "div");
-
-    if (child.props && child.props.value) {
-        data.label = child.props.value;
-    }
-
-    if (child.type == "group") {
-        let grandchildren = child.children;
-        if (grandchildren) {
-            grandchildren.forEach((grandchild, index) => {
-                let childData = buildChildTree(grandchild, id + "-" + (index + 1));
-
-                data.children.push(childData);
-            })
-        }
-    }
-
-
-    return data;
-}
-
-let buildPage = function (painterData) {
+let buildLayout = function (forkData, viewDetailObj) {
+    let id = forkData.id;
+    let detail = viewDetailObj[id];
     let tagName = "div";
-    if (painterData.type == "img" || painterData.type == "IMG") {
+    if (detail.type == "img" || detail.type == "IMG") {
         tagName = "img";
     }
     let ele = document.createElement(tagName);
 
-    // if (painterData.id) {
-    //     ele.setAttribute("view-id", painterData.id);
-    // }
-
     let viewType = "";
-    if (painterData.type && (painterData.type != "div" && painterData.type != "DIV") && (painterData.type != "img" && painterData.type != "IMG")) {
-        viewType = painterData.type;
+    if (detail.type && (detail.type != "div" && detail.type != "DIV") && (detail.type != "img" && detail.type != "IMG")) {
+        viewType = detail.type;
     }
     if (viewType) {
         ele.setAttribute("view-type", viewType);
     }
 
-    if (painterData.props) {
-        let props = {...painterData.props}
+    if (detail.props) {
+        let props = {...detail.props}
         let keys = Object.keys(props);
         for (let i = 0; i < keys.length; i++) {
             let key = keys[i];
@@ -128,22 +77,22 @@ let buildPage = function (painterData) {
         }
     }
 
-    if (painterData.style) {
-        let style = {...painterData.style};
+    if (detail.style) {
+        let style = {...detail.style};
         if (sizeComponent.indexOf(viewType) >= 0) {
-            let width = 0;
-            let height = 0;
-            if (style.width) {
-                width = parseInt(style.width);
-                delete style.width;
-            }
-
-            if (style.height) {
-                height = parseInt(style.height);
-                delete style.height;
-            }
-
+            let width = style.width;
+            delete style.width;
+            let height = style.height;
+            delete style.height;
             ele.setAttribute("size", width + "," + height);
+        }else{
+            style.width = style.width + "px";
+            style.height = style.height + "px";
+            style.left = style.left + "px";
+            style.top = style.top + "px";
+            if(style.fontSize != undefined){
+                style.fontSize = style.fontSize + "px";
+            }
         }
 
         let styleKeys = Object.keys(style);
@@ -156,10 +105,10 @@ let buildPage = function (painterData) {
         }
     }
 
-    if (painterData.children && painterData.children.length > 0) {
-        for (let i = 0; i < painterData.children.length; i++) {
-            let child = painterData.children[i];
-            let childEle = buildPage(child);
+    if (forkData.children && forkData.children.length > 0) {
+        for (let i = 0; i < forkData.children.length; i++) {
+            let child = forkData.children[i];
+            let childEle = buildLayout(child, viewDetailObj);
             ele.appendChild(childEle);
         }
     }
@@ -192,7 +141,6 @@ let writeFile = function (name, content, fileType) {
 
 export default {
     getDataById,
-    buildTree,
-    buildPage,
+    buildLayout,
     writeFile
 }
