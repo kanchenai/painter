@@ -1,6 +1,6 @@
 <template>
   <el-form ref="form" size="mini" label-width="150px">
-    <el-form-item label="焦点" v-if="isFocusSetting">
+    <el-form-item label="焦点" v-if="needFocusSetting">
       <el-radio-group style="width: 100%;" v-model="data.props.id">
         <el-radio style="float: left;" :label="'focus'">是</el-radio>
         <el-radio style="float: left;" :label="''">否</el-radio>
@@ -24,9 +24,12 @@
         <el-input v-model="data.style.height" type="number" placeholder="height"></el-input>
       </el-col>
     </el-form-item>
+    <el-form-item label="圆角">
+      <el-input v-model="data.style.borderRadius" type="number"></el-input>
+    </el-form-item>
     <el-form-item label="背景颜色" v-if="type!='img'">
       <el-color-picker style="float: left;" v-model="data.style.background"></el-color-picker>
-      <div style="float: left;margin-left: 10px;">{{ data.style.background }}</div>
+      <div style="float: left;margin-left: 10px;">{{ data.style.background||"透明" }}</div>
     </el-form-item>
     <el-form-item label="图片" v-if="type=='img'">
       <div style="width: 100%;">
@@ -62,11 +65,12 @@ export default {
     return {
       data: {
         style: {
-          width: 300,
-          height: 300,
+          width: 0,
+          height: 0,
           left: 0,
           top: 0,
-          background: ""
+          background: "",
+          borderRadius: 0
         },
         props: {
           src: "",
@@ -82,10 +86,10 @@ export default {
       return this.$store.getters.getDetailById(this.fatherDataId);
     },
 
-    isFocusSetting() {
+    needFocusSetting() {
       let flag = false;
       let fatherType = this.fatherDetail.type;
-      if (this.type == "img" && (fatherType == "focus" || fatherType == "button")) {
+      if (fatherType == "focus" || fatherType == "button") {
         flag = true;
       }
 
@@ -96,6 +100,16 @@ export default {
   watch: {
     type() {
       this.data.props.id = "";
+    },
+
+    "data.props.id": {
+      handler() {
+        if (this.data.props.id == "focus" && utils.insideConnot.indexOf(this.fatherDetail.type) >= 0
+            && this.data.style.width == 0 && this.data.style.height == 0) {
+          this.data.style.width = this.fatherDetail.style.width;
+          this.data.style.height = this.fatherDetail.style.height;
+        }
+      }
     }
   },
 
@@ -113,8 +127,8 @@ export default {
      */
     setData(data) {
       this.data.style = {...data.style};
+      this.data.props = {...data.props}
       if (this.type == "img") {
-        this.data.props = {...data.props}
         if (this.data.props.src) {
           this.picList = [{name: "", url: this.data.props.src}]
         } else {

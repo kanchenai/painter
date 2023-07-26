@@ -63,7 +63,7 @@
     </el-form-item>
     <el-form-item v-show="showDetail&&focusType=='normal'">
       <el-color-picker style="float: left;" v-model="data.props['focus-color']"></el-color-picker>
-      <div style="float: left;margin-left: 10px;">{{ data.props['focus-color'] }}</div>
+      <div style="float: left;margin-left: 10px;">{{ data.props['focus-color']||"透明" }}</div>
     </el-form-item>
     <el-form-item v-show="showDetail&&focusType!='normal'">
       <div style="width: 100%;">
@@ -95,7 +95,7 @@
     </el-form-item>
     <el-form-item label="文字颜色" v-show="showDetail">
       <el-color-picker style="float: left;" v-model="data.props['value-color']"></el-color-picker>
-      <div style="float: left;margin-left: 10px;">{{ data.props['value-color'] }}</div>
+      <div style="float: left;margin-left: 10px;">{{ data.props['value-color']||"默认" }}</div>
     </el-form-item>
     <el-form-item label="圆角半径" v-show="showDetail">
       <el-input v-model="data.props['radius']" type="number"></el-input>

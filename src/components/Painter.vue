@@ -64,7 +64,7 @@ export default {
         }
 
         this.$store.state.selectDataIdList.forEach(id => {
-          let viewData = this.$store.getters.getDataById(id);
+          let viewData = this.$store.getters.getDetailById(id);
           let style = viewData.style;
           var keyCode = event.which ? event.which : event.keyCode;
           switch (keyCode) {
@@ -180,13 +180,14 @@ export default {
         }
       }
 
-      let id = this.operateComponent.data.id
+      let data = this.operateComponent.data;
+      let id = data.id
       let detail = this.$store.getters.getDetailById(id);
       detail.style.width = width;
       detail.style.height = height;
       detail.style.left = left;
       detail.style.top = top;
-      this.$store.commit("editView", {id, data:detail})
+      this.$store.commit("editView", {id, data: detail, name: data.label})
     },
 
     mouseup(event) {

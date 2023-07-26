@@ -12,6 +12,7 @@ let option = {
 
         painterDataId: 0,
         selectDataIdList: [],
+        copyDataIdList: [],
     },
     // 在这里定义 mutations 修改状态的方法
     mutations: {
@@ -28,13 +29,14 @@ let option = {
                 style: {
                     width: 1280,
                     height: 720,
+                    background: "black"
                 },
             }
 
             state.painterDataId++;
         },
 
-        addView(state, {fatherId, data}) {
+        addView(state, {fatherId, data, name}) {
             let id = state.painterDataId + "";
             let {fatherFork, aimFork} = this.getters.getDataById(fatherId);
 
@@ -44,7 +46,7 @@ let option = {
 
             aimFork.children.push({
                 id,
-                label: data.type,
+                label: name,
                 children: []
             })
 
@@ -102,17 +104,17 @@ let option = {
             state.viewTreeData.__ob__.dep.notify();
         },
 
-        pushPainterChild(state, {fatherId, data}) {
-        },
+        editView(state, {id, data, name}) {
+            let {aimFork} = this.getters.getDataById(id);
 
-        editView(state, {id, data}) {
-            // debugger
+            aimFork.label = name;
+
             state.viewDetailObj[id] = data;
             state.viewDetailObj.__ob__.dep.notify();
             // console.log(state.viewDetailObj[id])
         },
 
-        deletePainterData(state, id) {
+        deleteView(state, id) {
             let {fatherFork, aimFork} = this.getters.getDataById(id);
 
             let children = null;
@@ -130,9 +132,28 @@ let option = {
             state.viewTreeData.__ob__.dep.notify();
         },
 
-        selectView(state,{id}){
+        selectView(state, {id}) {
             state.selectDataIdList = [id];
             state.selectDataIdList.__ob__.dep.notify();
+        },
+
+        copyView(state) {
+            state.copyDataIdList = [...state.selectDataIdList];
+        },
+
+        pasteView(state) {
+            state.selectDataIdList.forEach(selectedId => {
+                state.copyDataIdList.filter(copyId => {
+                    let detail = this.getters.getDetailById(copyId);
+                    let {aimFork} = this.getters.getDataById(copyId);
+                    detail = JSON.parse(JSON.stringify(detail));
+                    this.commit("addView", {fatherId: selectedId, data: detail, name: aimFork.label});
+                    //todo error 无法复制内部控件
+
+                    let obj = this.getters.getDataById(selectedId);
+                    console.log(obj.aimFork.children[obj.aimFork.children.length - 1].id)
+                })
+            })
         }
     },
     getters: {
@@ -143,6 +164,9 @@ let option = {
 
         getDetailById: (state) => (id) => {
             return state.viewDetailObj[id];
+        },
+        isSelected: (state) => (id) => {
+            return state.selectDataIdList.indexOf(id) >= 0;
         },
     },
     actions: {

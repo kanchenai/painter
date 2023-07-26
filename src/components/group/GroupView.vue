@@ -10,7 +10,7 @@
         <base-view v-else :data="child"></base-view>
       </div>
     </div>
-    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
+    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}" v-if="detail.type=='group'"></div>
     <div style="position: absolute;overflow: hidden;pointer-events: none;" :style="style" v-show="showReferLine">
       <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index" :style="{left:left+'px'}"></div>
       <div class="h-line" v-for="(top,index) of referLine.hLineList" :key="'h'+index" :style="{top:top+'px'}"></div>
@@ -21,10 +21,10 @@
 <script>
 
 import ButtonView from "@/components/button/ButtonView.vue";
-import TextView from "@/components/TextView.vue";
+import TextView from "@/components/text/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
 import utils from "@/utils/utils";
-import FocusView from "@/components/Focus/FocusView.vue";
+import FocusView from "@/components/focus/FocusView.vue";
 
 /**
  * 只用来布局
@@ -131,12 +131,9 @@ export default {
     },
 
     selected() {
-      let flag = false;
-      if(this.$store.state.selectDataIdList.indexOf(this.data.id)>=0){
-        flag = true;
-      }
+      let flag = this.$store.getters.isSelected(this.data.id)
       return flag;
-    }
+    },
   },
 
   watch:{
@@ -193,9 +190,10 @@ export default {
 <style scoped>
 .bg {
   position: absolute;
-  border: 1px dashed gray;
+  border: 1px dashed white;
   pointer-events: none;
-  opacity: 0.3;
+  opacity: 0.8;
+  z-index: 1;
 }
 
 .group::-webkit-scrollbar {

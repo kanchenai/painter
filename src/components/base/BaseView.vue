@@ -1,9 +1,9 @@
 <template>
   <div v-show="!isFocus || $store.state.selectDataIdList.indexOf(fatherDataId)>=0">
-    <div style="position: absolute;overflow: hidden;" v-if="type!='img'" :style="style" @dblclick="editView"
+    <div style="position: absolute;overflow: hidden;z-index: 1;" v-if="type!='img'" :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove">
     </div>
-    <div style="position: absolute;" v-else :style="style" @dblclick="editView"
+    <div style="position: absolute;z-index: 1;" v-else :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove">
       <img style="pointer-events: none;" :src="src" :style="{width:style.width,height:style.height}">
     </div>
@@ -49,7 +49,7 @@ export default {
 
     isFocus() {
       let flag = false;
-      if (this.detail.type == "img" && this.detail.props.id == "focus") {
+      if (this.detail.props.id == "focus") {
         flag = true;
       }
 
@@ -123,6 +123,7 @@ export default {
       value.top = top + "px";
 
       value.background = this.detail.style.background;
+      value.borderRadius = this.detail.style.borderRadius + "px";
 
       if (this.isFocus) {
         value.pointerEvents = "none";
@@ -151,12 +152,12 @@ export default {
     },
 
     mousedown(event) {
-      if (this.isFocus  || utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
+      if (this.isFocus || utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
 
       } else {
         event.stopPropagation();
         this.$painter.mousedown(event, this);
-        this.$store.commit("selectView",{id:this.data.id});
+        this.$store.commit("selectView", {id: this.data.id});
       }
     },
     mousemove(event) {

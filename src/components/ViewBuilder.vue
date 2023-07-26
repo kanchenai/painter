@@ -22,11 +22,12 @@
         @node-drag-end="nodeDragEnd"
         :allow-drop="allowDrop">
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ isFocus(data.id)?"焦点":node.label }}</span>
+        <span>{{ node.label }}</span>
         <span>
           <el-button
               type="text"
               size="mini"
+              v-if="getDetailById(data.id).type!='div'&&getDetailById(data.id).type!='img'&&getDetailById(data.id).type!='text'"
               @click="addView(data.id)">
             新增
           </el-button>
@@ -75,6 +76,7 @@ export default {
   data() {
     return {
       selectedId: "",
+      isWin: true,
     }
   },
 
@@ -95,6 +97,55 @@ export default {
 
   created() {
     window.viewBuilder = this;
+    if (navigator.userAgent.toLowerCase().indexOf("win") > -1) {
+      this.isWin = true;
+    } else {
+      this.isWin = false
+    }
+  },
+
+  mounted() {
+    // this.$refs.tree.$el.addEventListener('copy', (event) => {
+    //   console.log('Text copied!');
+    //   // 在这里可以执行你的自定义逻辑
+    //   // this.copy();
+    // });
+    //
+    // // 监听粘贴事件
+    // this.$refs.tree.$el.addEventListener('paste', (event) => {
+    //   console.log('Text pasted!');
+    //   // 在这里可以执行你的自定义逻辑
+    //   // this.paste();
+    // });
+
+    document.onkeydown = (event) => {
+      if (event.target != this.$refs.tree.$el && !this.$refs.tree.$el.contains(event.target)) {
+        return;
+      }
+
+      let key = event.keyCode || event.which;
+      // console.log("key", key);
+      if (this.isWin) {//windows
+        if (key === 67 && event.ctrlKey) {// 监听ctrl+C组合键
+          this.copy();
+        } else if (key === 86 && event.ctrlKey) {// 监听ctrl+V组合键
+          this.paste();
+        }
+      } else {//mac
+        if (key === 67 && event.metaKey) {
+          this.copy();
+        } else if (key === 86 && event.metaKey) {
+          this.paste();
+        }
+      }
+
+      if (key === 46) {// 监听delete键
+        this.$store.state.selectDataIdList.forEach(id => {
+          this.removeView(id)
+        })
+        this.$store.state.selectDataIdList = [];
+      }
+    }
   },
 
   methods: {
@@ -114,7 +165,7 @@ export default {
     },
 
     removeView(id) {
-      this.$store.commit("deletePainterData", id)
+      this.$store.commit("deleteView", id)
     },
 
     buildPage(id) {
@@ -142,6 +193,7 @@ export default {
       let detail = this.$store.getters.getDetailById(data.id);
       if (detail.type == "page") {
         this.$emit("changePage", data.id);
+        this.$store.commit("selectView", {id: data.id});
       } else {
         this.$store.commit("selectView", {id: data.id});
       }
@@ -149,27 +201,32 @@ export default {
 
     allowDrop(draggingNode, dropNode, type) {
       let flag = true;
+      if (!dropNode) {
+        console.log(dropNode)
+        flag = false;
+      } else {
+        let draggingDetail = this.$store.getters.getDetailById(draggingNode.data.id);
+        let dropDetail = this.$store.getters.getDetailById(dropNode.data.id);
 
-      let draggingDetail = this.$store.getters.getDetailById(draggingNode.data.id);
-      let dropDetail = this.$store.getters.getDetailById(dropNode.data.id);
-
-      if (type == "inner") {
-        if (draggingDetail.type == "page") {
+        if (type == "inner") {
+          if (draggingDetail.type == "page") {
+            flag = false;
+          } else {
+            if (dropDetail.type == "div" || dropDetail.type == "img" || dropDetail.type == "text") {
+              flag = false;
+            }
+          }
+        } else if (type == "none") {
           flag = false;
         } else {
-          if (dropDetail.type != "page" && dropDetail.type != "group") {
+          if (draggingDetail.type == "page" && dropDetail.type == "page") {
+            flag = true;
+          } else {
             flag = false;
           }
         }
-      } else if (type == "none") {
-        flag = false;
-      } else {
-        if (draggingDetail.type == "page" && dropDetail.type == "page") {
-          flag = true;
-        } else {
-          flag = false;
-        }
       }
+
 
       return flag;
     },
@@ -192,13 +249,46 @@ export default {
       return this.$store.getters.getDetailById(id);
     },
 
-    isFocus(id){
-      let detail = this.$store.getters.getDetailById(id);
-      let flag = false;
-      if(detail && detail.props && detail.props.id == "focus" ){
-        flag = true;
+    copy() {
+      let itemList = this.$store.state.selectDataIdList.filter(id => {
+        let flag = false;
+        let detail = this.$store.getters.getDetailById(id);
+        if (detail.type == "page") {
+          flag = true;
+        }
+
+        return flag;
+      })
+
+      if (itemList.length > 0) {
+        this.$message.warning("当前选中的控件，无法被复制")
+        return;
       }
-      return flag;
+      console.log("copy")
+      this.$store.commit("copyView");
+    },
+
+    paste() {
+      if(this.$store.state.selectDataIdList.length == 0){
+        return;
+      }
+      let itemList_1 = this.$store.state.selectDataIdList.filter(id => {
+        let flag = false;
+        let detail = this.$store.getters.getDetailById(id);
+        if (detail.type == "div" || detail.type == "img" || detail.type == "text") {
+          flag = true;
+        }
+
+        return flag;
+      })
+
+      if (itemList_1.length > 0) {
+        this.$message.warning("被复制的控件无法粘贴到当前选中的控件")
+        return;
+      }
+
+      console.log("copy")
+      this.$store.commit("pasteView");
     }
   },
 

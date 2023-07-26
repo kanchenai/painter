@@ -4,7 +4,6 @@
  */
 let sizeComponent = ["button"];
 
-
 let getDataById = function (treeData, id) {
     let fatherFork = null;
     let aimFork = null;
@@ -40,38 +39,6 @@ let getForkById = function (fatherFork, fork, id) {
     return {fatherFork, aimFork}
 }
 
-let dragData = function (painterData, fromId, toId, dropType) {
-    //删除fromId
-    let fromData = removeData(painterData, fromId);
-    //insert或push toId
-
-
-}
-
-let removeData = function (painterData, id) {
-    let data = null;
-    if (painterData.id == id) {
-        data = painterData;
-    } else {
-        let children = painterData.children;
-        if (children) {
-            for (let i = 0; i < children.length; i++) {
-                data = removeData(children[i], id);
-                if (data) {
-                    children.splice(i, 1);
-                    break;
-                }
-            }
-        }
-    }
-
-    return data;
-}
-
-let insertData = function (toId, dropType, data) {
-
-}
-
 let buildTree = function (painterData) {
     let data = [];
 
@@ -83,6 +50,14 @@ let buildTree = function (painterData) {
     }
 
     return data;
+}
+
+let pasteBy = function (viewTreeData, viewDetailObj, selectDataIdList, copyDataIdList) {
+
+}
+
+let pasteFromTo = function (){
+
 }
 
 let buildChildTree = function (child, id) {

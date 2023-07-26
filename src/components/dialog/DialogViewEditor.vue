@@ -11,11 +11,15 @@
                      :value="item.type"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="控件名">
+        <el-input v-model="name" placeholder="请输入控件名"></el-input>
+      </el-form-item>
     </el-form>
     <group-config ref="groupConfig" v-if="type=='group'"></group-config>
     <focus-config ref="focusConfig" v-if="type=='focus'"></focus-config>
     <button-config ref="buttonConfig" v-if="type=='button'"></button-config>
-    <base-config ref="baseConfig" v-if="type=='div'||type=='img'" :type="type" :father-data-id="fatherDataId"></base-config>
+    <base-config ref="baseConfig" v-if="type=='div'||type=='img'" :father-data-id="fatherDataId" :type="type"></base-config>
+    <text-config ref="textConfig" v-if="type=='text'"></text-config>
     <div style="width: 100%">
       <el-button type="primary" size="mini" @click="submit">确认</el-button>
       <el-button size="mini" @click="visible=false">取消</el-button>
@@ -26,8 +30,9 @@
 import Vue from "vue";
 import ButtonConfig from "@/components/button/ButtonConfig.vue";
 import GroupConfig from "@/components/group/GroupConfig.vue";
-import FocusConfig from "@/components/Focus/FocusConfig.vue";
+import FocusConfig from "@/components/focus/FocusConfig.vue";
 import BaseConfig from "@/components/base/BaseConfig.vue";
+import TextConfig from "@/components/text/TextConfig.vue";
 
 export default {
   name: "DialogViewEditor",
@@ -37,6 +42,7 @@ export default {
       title: "",
       editType: "",
       type: "",
+      name: "",
 
       fatherDataId: "",
       dataId: "",
@@ -44,19 +50,25 @@ export default {
   },
 
   computed: {
-    fatherDetail(){
+    fatherDetail() {
       return this.$store.getters.getDetailById(this.fatherDataId);
     },
 
     viewTypeList() {
-      let value = [{
-        label: "Div",
-        type: "div"
-      },
+      let value = [
+        {
+          label: "Div",
+          type: "div"
+        },
         {
           label: "Image",
           type: "img"
-        }];
+        },
+        {
+          label: "Text",
+          type: "text"
+        },
+      ];
       if (this.editType == "edit" || this.fatherDetail.type == "group" || this.fatherDetail.type == "page") {
         value = value.concat([
           {
@@ -93,6 +105,7 @@ export default {
       this.title = "新增控件";
 
       this.type = "";
+      this.name = "";
     },
 
     editShow(id) {
@@ -110,10 +123,9 @@ export default {
       let data = this.getConfigData();
 
       if (this.editType == "add") {
-        this.$store.commit("addView", {fatherId: this.fatherDataId, data})
+        this.$store.commit("addView", {fatherId: this.fatherDataId, data, name: this.name})
       } else {
-
-        this.$store.commit("editView", {id: this.dataId, data})
+        this.$store.commit("editView", {id: this.dataId, data, name: this.name})
       }
 
       this.visible = false;
@@ -135,6 +147,9 @@ export default {
         case "div":
           data = this.$refs.baseConfig.getData();
           break;
+        case "text":
+          data = this.$refs.textConfig.getData();
+          break;
       }
 
       return data;
@@ -144,24 +159,30 @@ export default {
       if (!this.dataId) {
         return;
       }
-      let data = this.$store.getters.getDetailById(this.dataId);
-      data = JSON.parse(JSON.stringify(data));
-      this.type = data.type;
+      let detail = this.$store.getters.getDetailById(this.dataId);
+      detail = JSON.parse(JSON.stringify(detail));
+      this.type = detail.type;
+
+      let {aimFork} = this.$store.getters.getDataById(this.dataId);
+      this.name = aimFork.label;
 
       this.$nextTick(() => {
         switch (this.type) {
           case "group":
-            this.$refs.groupConfig.setData(data);
+            this.$refs.groupConfig.setData(detail);
             break;
           case "focus":
-            this.$refs.focusConfig.setData(data);
+            this.$refs.focusConfig.setData(detail);
             break;
           case "button":
-            this.$refs.buttonConfig.setData(data);
+            this.$refs.buttonConfig.setData(detail);
             break;
           case "img":
           case "div":
-            data = this.$refs.baseConfig.setData(data);
+            this.$refs.baseConfig.setData(detail);
+            break;
+          case "text":
+            this.$refs.textConfig.setData(detail);
             break;
         }
       })
@@ -170,6 +191,7 @@ export default {
   },
 
   components: {
+    TextConfig,
     BaseConfig,
     ButtonConfig,
     GroupConfig,

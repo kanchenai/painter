@@ -1,24 +1,28 @@
 <template>
   <div>
-    <div class="focus" style="position: absolute;" :style="style" @dblclick.stop="editView"
+    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:style.left,top:style.top}"></div>
+    <div class="default-focus" :style="{width:width+'px',height:height+'px',left:(left<3?0:left-3)+'px',top:(top<3?0:top-3)+'px'}"
+         v-if="!focus" v-show="selected"></div>
+    <div class="focus" :style="style" @dblclick.stop="editView"
          @mousedown.stop="mousedown" @mousemove.stop="mousemove">
       <div v-for="(child,index) in data.children" :key="index">
-        <base-view :data="child"></base-view>
+        <text-view v-if="$store.getters.getDetailById(child.id).type=='text'" :data="child"></text-view>
+        <base-view v-else :data="child"></base-view>
       </div>
     </div>
-
-<!--    <div style="position: absolute" v-show="selected">-->
-<!--      <img v-if="focus" style="position: absolute;pointer-events: none;" :src="focus.props.src"-->
-<!--           :style="{left:disLeft+'px',top:disTop+'px'}" :width="focus.style.width" :height="focus.style.height">-->
-<!--      <div class="focus" v-else-->
-<!--           :style="{width:width+'px',height:height+'px',background:detail.props['focus-color']}"></div>-->
-<!--    </div>-->
+    <!--    <div style="position: absolute" v-show="selected">-->
+    <!--      <img v-if="focus" style="position: absolute;pointer-events: none;" :src="focus.props.src"-->
+    <!--           :style="{left:disLeft+'px',top:disTop+'px'}" :width="focus.style.width" :height="focus.style.height">-->
+    <!--      <div class="focus" v-else-->
+    <!--           :style="{width:width+'px',height:height+'px',background:detail.props['focus-color']}"></div>-->
+    <!--    </div>-->
   </div>
 </template>
 <script>
 
 import BaseView from "@/components/base/BaseView.vue";
 import utils from "@/utils/utils";
+import TextView from "@/components/text/TextView.vue";
 
 /**
  * 只用来布局
@@ -30,9 +34,9 @@ export default {
   },
 
   computed: {
-    detail(){
+    detail() {
       let value = null;
-      if(this.data){
+      if (this.data) {
         value = this.$store.getters.getDetailById(this.data.id);
       }
       return value;
@@ -108,6 +112,8 @@ export default {
       if (this.focus) {
         let width = this.focus.style.width;
         value = (this.width - width) / 2;
+      } else {
+        value = -3;
       }
 
       return value;
@@ -119,6 +125,8 @@ export default {
       if (this.focus) {
         let height = this.focus.style.height;
         value = (this.height - height) / 2;
+      } else {
+        value = -3;
       }
 
       return value;
@@ -139,16 +147,12 @@ export default {
     },
 
     selected() {
-      let flag = false;
-      if(this.$store.state.selectDataIdList.indexOf(this.data.id)>=0){
-        flag = true;
-      }
+      let flag = this.$store.getters.isSelected(this.data.id)
       return flag;
     },
   },
 
-  watch:{
-  },
+  watch: {},
 
   methods: {
     editView() {
@@ -157,7 +161,9 @@ export default {
 
     mousedown(event) {
       this.$painter.mousedown(event, this);
-      this.$store.commit("selectView",{id:this.data.id});
+      if (!this.selected) {
+        this.$store.commit("selectView", {id: this.data.id});
+      }
     },
     mousemove(event) {
       let downType = utils.judgeDownType(event, this);
@@ -178,8 +184,27 @@ export default {
     },
   },
 
-  components: { BaseView}
+  components: {TextView, BaseView}
 }
 </script>
 <style scoped>
+.bg {
+  position: absolute;
+  border: 1px dashed white;
+  pointer-events: none;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.default-focus {
+  position: absolute;
+  border: 3px solid white;
+  pointer-events: none;
+  border-radius: 7px;
+  z-index: 1;
+}
+.focus{
+  position: absolute;
+  overflow: hidden;
+}
 </style>

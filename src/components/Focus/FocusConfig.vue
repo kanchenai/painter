@@ -33,7 +33,6 @@ export default {
           left: 0,
           top: 0,
         },
-        children: []
       },
     }
   },
@@ -45,14 +44,12 @@ export default {
     setData(data) {
       console.log(data)
       this.data.style = {...data.style}
-      this.data.children = data.children;
     },
 
     getData() {
       let data = {
         type: "focus",
         style: {...this.data.style},
-        children: this.data.children
       };
       console.log(data)
       return data;
