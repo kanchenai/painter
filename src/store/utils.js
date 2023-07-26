@@ -66,10 +66,8 @@ let buildLayout = function (forkData, viewDetailObj) {
             if (value) {
                 if (key == "src") {
                     ele.src = value;
-                } else if (viewType == "text" || viewType == "view-text" || !viewType) {
-                    if (key == "value") {
-                        ele.innerText = value;
-                    }
+                } else if ((viewType == "text" || viewType == "view-text" || !viewType) && key == "value") {
+                    ele.innerText = value;
                 } else {
                     ele.setAttribute(key, value);
                 }

@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:style.left,top:style.top}"></div>
     <div class="text" :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove">
       {{ text }}
     </div>
+    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:style.left,top:style.top,background:selected?'gray':''}"></div>
   </div>
 </template>
 <script>
@@ -81,7 +81,11 @@ export default {
         value = this.detail.props.value;
       }
       return value;
-    }
+    },
+    selected() {
+      let flag = this.$store.getters.isSelected(this.data.id)
+      return flag;
+    },
   },
 
   methods: {

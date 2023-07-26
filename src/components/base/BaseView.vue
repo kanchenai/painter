@@ -7,6 +7,8 @@
          @mousedown="mousedown" @mousemove="mousemove">
       <img style="pointer-events: none;" :src="src" :style="{width:style.width,height:style.height}">
     </div>
+
+    <div class="bg" :style="{width:width+'px',height:height+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
   </div>
 </template>
 <script>
@@ -140,6 +142,11 @@ export default {
 
       return value;
     },
+
+    selected() {
+      let flag = this.$store.getters.isSelected(this.data.id)
+      return flag;
+    },
   },
 
   methods: {
@@ -189,9 +196,8 @@ export default {
 <style scoped>
 .bg {
   position: absolute;
-  border: 3px dashed gray;
-  width: calc(100% - 6px);
-  height: calc(100% - 6px);
   pointer-events: none;
+  opacity: 0.8;
+  z-index: 1;
 }
 </style>
