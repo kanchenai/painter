@@ -101,12 +101,16 @@ export default {
 
       value.background = this.detail.style.background;
 
+      if(this.detail.type == "group"){
+        value.zIndex = "1";
+      }
+
       return value;
     },
 
     referLine() {
       let value = {vLineList: [], hLineList: []};
-
+      
       if (this.data.children && this.data.children.length > 0) {
         this.data.children.forEach(child => {
           if(this.$store.state.selectDataIdList.indexOf(child.id) >= 0){

@@ -170,21 +170,21 @@ export default {
 
     buildPage(id) {
       let {aimFork} = this.$store.getters.getDataById(id);
-      let viewDetailObj = this.$store.state.viewDetailObj;
-      console.log(aimFork);
-      let ele = utils.buildLayout(aimFork, viewDetailObj);
-      console.log(ele);
-
-      let html = '<template>' +
-          ele.innerHTML
-          + '</template>'
-
-      this.$alert('布局生成一个'+aimFork.label+'页面', '提示', {
+      this.$alert('布局生成一个' + aimFork.label + '页面', '提示', {
         confirmButtonText: '确定',
         callback: action => {
+          let viewDetailObj = this.$store.state.viewDetailObj;
+          let {ele, imageList} = utils.buildLayout(aimFork.label, aimFork, viewDetailObj);
+          console.log(ele);
+
+          let html = '<template>' +
+              ele.innerHTML
+              + '</template>';
+
           console.log(action)
           if (action == "confirm") {
             utils.writeFile(aimFork.label, html, "html");
+            utils.downloadPage(aimFork.label, imageList, html,)
           }
         }
       });
@@ -220,18 +220,18 @@ export default {
           flag = false;
         } else {
           if (draggingDetail.type == "page") {
-            if(dropDetail.type == "page"){
+            if (dropDetail.type == "page") {
               flag = true;
             }
           } else {
-            if(dropDetail.type != "page"){
+            if (dropDetail.type != "page") {
               flag = true;
             }
           }
         }
       }
 
-      console.log("allowDrop",flag);
+      console.log("allowDrop", flag);
       return flag;
     },
 

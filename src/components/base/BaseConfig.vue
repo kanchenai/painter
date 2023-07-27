@@ -73,7 +73,7 @@ export default {
           borderRadius: 0
         },
         props: {
-          src: "",
+          src: {url: "", type: ""},
           id: ""
         },
       },
@@ -121,11 +121,20 @@ export default {
 
   methods: {
     async changePic(file, fileList) {
-      this.data.props.src = URL.createObjectURL(file.raw);
+      console.log(file)
+      let imageType = "";
+      let index = file.name.lastIndexOf(".");
+      if (index >= 0) {
+        imageType = file.name.substring(index + 1);
+      }
+      this.data.props.src = {url: URL.createObjectURL(file.raw), type: imageType};
 
-      let {width, height} = await utils.getImageSize(file);
-      this.data.style.width = width;
-      this.data.style.height = height;
+      if (this.data.style.width == 0 && this.data.style.height == 0) {
+        let {width, height} = await utils.getImageSize(file);
+        this.data.style.width = width;
+        this.data.style.height = height;
+      }
+
     },
 
     /**
@@ -136,7 +145,7 @@ export default {
       this.data.props = {...data.props}
       if (this.type == "img") {
         if (this.data.props.src) {
-          this.picList = [{name: "", url: this.data.props.src}]
+          this.picList = [{name: "", url: this.data.props.src.url}]
         } else {
           this.picList = []
         }

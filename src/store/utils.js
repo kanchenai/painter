@@ -1,3 +1,5 @@
+import JSZip from "jszip";
+
 /**
  * size使用标签的控件名
  * @type {string[]}
@@ -40,7 +42,7 @@ let getForkById = function (fatherFork, fork, id) {
 }
 
 
-let buildLayout = function (forkData, viewDetailObj) {
+let buildLayout = function (pageName, forkData, viewDetailObj) {
     let id = forkData.id;
     let detail = viewDetailObj[id];
     let tagName = "div";
@@ -48,7 +50,7 @@ let buildLayout = function (forkData, viewDetailObj) {
         tagName = "img";
     }
     let ele = document.createElement(tagName);
-
+    let imageList = [];
     let viewType = "";
     if (detail.type && (detail.type != "div" && detail.type != "DIV") && (detail.type != "img" && detail.type != "IMG")) {
         viewType = detail.type;
@@ -65,10 +67,21 @@ let buildLayout = function (forkData, viewDetailObj) {
             let value = props[key];
             if (value) {
                 if (key == "src") {
-                    ele.src = value;
+                    if(value.url){
+                        let imageName =getFileNameBy(value.url);
+                        if (imageName.indexOf(".") < 0) {
+                            imageName += "." + value.type;
+                        }
+                        let imgPath = "../images/" + pageName + "/" + imageName;
+                        ele.src = imgPath;
+                        imageList.push(value);
+                    }
+
                 } else if ((viewType == "text" || viewType == "view-text" || !viewType) && key == "value") {
                     ele.innerText = value;
-                } else {
+                } else if(key == "id"){
+                    ele.setAttribute("view-id", value);
+                }else{
                     ele.setAttribute(key, value);
                 }
             }
@@ -83,13 +96,17 @@ let buildLayout = function (forkData, viewDetailObj) {
             let height = style.height;
             delete style.height;
             ele.setAttribute("size", width + "," + height);
-        }else{
+        } else {
             style.width = style.width + "px";
             style.height = style.height + "px";
             style.left = style.left + "px";
             style.top = style.top + "px";
-            if(style.fontSize != undefined){
+            if (style.fontSize != undefined) {
                 style.fontSize = style.fontSize + "px";
+            }
+
+            if (style.borderRadius != undefined) {
+                style.borderRadius = style.borderRadius + "px";
             }
         }
 
@@ -106,12 +123,14 @@ let buildLayout = function (forkData, viewDetailObj) {
     if (forkData.children && forkData.children.length > 0) {
         for (let i = 0; i < forkData.children.length; i++) {
             let child = forkData.children[i];
-            let childEle = buildLayout(child, viewDetailObj);
-            ele.appendChild(childEle);
+            let childObj = buildLayout(pageName, child, viewDetailObj);
+            ele.appendChild(childObj.ele);
+
+            imageList = imageList.concat(childObj.imageList);
         }
     }
 
-    return ele;
+    return {ele, imageList};
 
 }
 
@@ -137,8 +156,55 @@ let writeFile = function (name, content, fileType) {
     URL.revokeObjectURL(objectURL)
 }
 
+let downloadPage = function (pageName, images, pageLayout) {
+    const zip = new JSZip();
+
+    const promises = images.map(image => {
+        return fetch(image.url)
+            .then(response => response.blob())
+            .then(blob => {
+                let folderPath = "code/images/" + pageName + "/";
+                let fileName = getFileNameBy(image.url);
+                if (fileName.indexOf(".") < 0) {
+                    fileName += "." + image.type;
+                }
+                let filePath = folderPath + fileName;
+
+                zip.file(filePath, blob);
+            });
+    });
+
+    const folderPath = "code/html/";
+    const filePath = folderPath + pageName + ".html";
+    zip.file(filePath, pageLayout);
+    promises.push(Promise.resolve());
+
+    Promise.all(promises)
+        .then(() => {
+            return zip.generateAsync({type: 'blob'});
+        }).then(content => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = pageName + ".zip";
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+}
+
+/**
+ * 获取链接中的文件名
+ * @param url
+ * @returns {string}
+ */
+let getFileNameBy = function (url) {
+    let index = url.lastIndexOf("/");
+    return url.substring(index + 1);
+}
+
 export default {
     getDataById,
     buildLayout,
-    writeFile
+    writeFile,
+    downloadPage,
+    getFileNameBy
 }

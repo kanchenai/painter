@@ -1,5 +1,5 @@
 <template>
-  <div style="position: absolute" :style="style" @dblclick.stop="editView"
+  <div style="position: absolute;z-index: 1;" :style="style" @dblclick.stop="editView"
        @mousedown.stop="mousedown" @mousemove.stop="mousemove">
     <div style="position: absolute">
       <img v-if="bg" style="position: absolute;pointer-events: none;" :src="bg.props.src"

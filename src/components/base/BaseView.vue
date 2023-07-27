@@ -136,8 +136,8 @@ export default {
     src() {
       let value = "";
 
-      if (this.detail.props && this.detail.props.src) {
-        value = this.detail.props.src;
+      if (this.detail.props && this.detail.props.src.url) {
+        value = this.detail.props.src.url;
       }
 
       return value;
