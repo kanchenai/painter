@@ -10,12 +10,8 @@
         <base-view v-else :data="child"></base-view>
       </div>
     </div>
-    <!--    <div style="position: absolute" v-show="selected">-->
-    <!--      <img v-if="focus" style="position: absolute;pointer-events: none;" :src="focus.props.src"-->
-    <!--           :style="{left:disLeft+'px',top:disTop+'px'}" :width="focus.style.width" :height="focus.style.height">-->
-    <!--      <div class="focus" v-else-->
-    <!--           :style="{width:width+'px',height:height+'px',background:detail.props['focus-color']}"></div>-->
-    <!--    </div>-->
+    <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">{{'l:'+left+','+'t:'+top}}</div>
+    <div class="size" :style="{left:left+2+'px',top:top+14+'px'}" v-if="selected">{{'w:'+width+','+'h:'+height}}</div>
   </div>
 </template>
 <script>
@@ -160,7 +156,7 @@ export default {
     },
 
     mousedown(event) {
-      this.$painter.mousedown(event, this);
+      this.$viewEffect.mousedown(event, this);
       if (!this.selected) {
         this.$store.commit("selectView", {id: this.data.id});
       }
@@ -180,7 +176,7 @@ export default {
           event.target.style.cursor = "ns-resize";
         }
       }
-      this.$painter.mousemove(event);
+      this.$viewEffect.mousemove(event);
     },
   },
 
@@ -206,5 +202,17 @@ export default {
 .focus{
   position: absolute;
   overflow: hidden;
+}
+
+.size,
+.position {
+  position: absolute;
+  font-size: 12px;
+  line-height: 12px;
+  padding: 0 2px;
+  color: white;
+  z-index: 1;
+  opacity: 0.8;
+  pointer-events: none;
 }
 </style>

@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import Painter from "./components/Painter.vue"
-import ViewBuilder from "@/components/ViewBuilder.vue";
+import Painter from "./components/ViewEffect.vue"
+import ViewBuilder from "@/components/ViewTree.vue";
 
 export default {
   name: 'App',

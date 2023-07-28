@@ -169,7 +169,7 @@ export default {
     },
 
     mousedown(event) {
-      this.$painter.mousedown(event, this);
+      this.$viewEffect.mousedown(event, this);
 
       this.$store.commit("selectView",{id:this.data.id});
     },
@@ -189,7 +189,7 @@ export default {
         }
       }
 
-      this.$painter.mousemove(event);
+      this.$viewEffect.mousemove(event);
     }
   }
 }

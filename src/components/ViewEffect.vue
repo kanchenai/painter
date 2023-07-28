@@ -47,7 +47,7 @@ export default {
 
   created() {
     window.painter = this;
-    Vue.prototype.$painter = this;
+    Vue.prototype.$viewEffect = this;
 
     this.initKeydown();
   },
@@ -85,6 +85,8 @@ export default {
               style.top++;
               break;
           }
+
+          this.$store.state.viewDetailObj.__ob__.dep.notify();
         })
       }
     },

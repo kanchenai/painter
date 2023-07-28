@@ -1,5 +1,5 @@
 <template>
-  <div v-show="!isFocus || $store.state.selectDataIdList.indexOf(fatherDataId)>=0">
+  <div v-show="!isFocus || $store.state.selectDataIdList.indexOf(fatherDataId)>=0 || $store.state.selectDataIdList.indexOf(data.id)>=0">
     <div style="position: absolute;overflow: hidden;z-index: 1;" v-if="type!='img'" :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove">
     </div>
@@ -9,6 +9,9 @@
     </div>
 
     <div class="bg" :style="{width:width+'px',height:height+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
+    <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">{{'l:'+left+','+'t:'+top}}</div>
+    <div class="size" :style="{left:left+2+'px',top:top+14+'px'}" v-if="selected">{{'w:'+width+','+'h:'+height}}</div>
+
   </div>
 </template>
 <script>
@@ -163,7 +166,7 @@ export default {
 
       } else {
         event.stopPropagation();
-        this.$painter.mousedown(event, this);
+        this.$viewEffect.mousedown(event, this);
         this.$store.commit("selectView", {id: this.data.id});
       }
     },
@@ -187,7 +190,7 @@ export default {
           }
         }
 
-        this.$painter.mousemove(event);
+        this.$viewEffect.mousemove(event);
       }
     }
   },
@@ -198,6 +201,16 @@ export default {
   position: absolute;
   pointer-events: none;
   opacity: 0.8;
+  z-index: 1;
+}
+
+.size,
+.position {
+  position: absolute;
+  font-size: 12px;
+  line-height: 12px;
+  padding: 0 2px;
+  color: white;
   z-index: 1;
 }
 </style>

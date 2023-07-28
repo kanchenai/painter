@@ -67,8 +67,8 @@ let buildLayout = function (pageName, forkData, viewDetailObj) {
             let value = props[key];
             if (value) {
                 if (key == "src") {
-                    if(value.url){
-                        let imageName =getFileNameBy(value.url);
+                    if (value.url) {
+                        let imageName = getFileNameBy(value.url);
                         if (imageName.indexOf(".") < 0) {
                             imageName += "." + value.type;
                         }
@@ -79,9 +79,11 @@ let buildLayout = function (pageName, forkData, viewDetailObj) {
 
                 } else if ((viewType == "text" || viewType == "view-text" || !viewType) && key == "value") {
                     ele.innerText = value;
-                } else if(key == "id"){
+                } else if (key == "id") {
                     ele.setAttribute("view-id", value);
-                }else{
+                } else if (key == "firstFocus") {
+                    ele.setAttribute("first-focus", "");
+                } else {
                     ele.setAttribute(key, value);
                 }
             }

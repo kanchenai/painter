@@ -18,6 +18,12 @@
         <el-input v-model="data.style.height" type="number" placeholder="height"></el-input>
       </el-col>
     </el-form-item>
+    <el-form-item label="初始焦点">
+      <el-radio-group style="width: 100%;" v-model="data.props.firstFocus">
+        <el-radio style="float: left;" :label="true">是</el-radio>
+        <el-radio style="float: left;" :label="false">否</el-radio>
+      </el-radio-group>
+    </el-form-item>
   </el-form>
 </template>
 <script>
@@ -33,6 +39,9 @@ export default {
           left: 0,
           top: 0,
         },
+        props: {
+          firstFocus: false
+        }
       },
     }
   },

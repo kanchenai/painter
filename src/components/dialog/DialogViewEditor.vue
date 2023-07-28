@@ -6,7 +6,7 @@
       width="50%">
     <el-form ref="form" size="mini" label-width="150px">
       <el-form-item label="控件类型">
-        <el-select style="width: 100%" v-model="type" :disabled="editType=='edit'" placeholder="控件类型">
+        <el-select style="width: 100%" v-model="type" :disabled="editType=='edit'" :clearable="true" :filterable="true" placeholder="控件类型">
           <el-option v-for="(item,index) in viewTypeList" :key="index" :label="item.label"
                      :value="item.type"></el-option>
         </el-select>

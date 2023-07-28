@@ -18,6 +18,7 @@
         :current-node-key="selectedId"
         :expand-on-click-node="false"
         :highlight-current="true"
+        :accordion="false"
         @current-change="currentChange"
         @node-drag-end="nodeDragEnd"
         :allow-drop="allowDrop">
@@ -96,7 +97,7 @@ export default {
   },
 
   created() {
-    window.viewBuilder = this;
+    window.viewTree= this;
     if (navigator.userAgent.toLowerCase().indexOf("win") > -1) {
       this.isWin = true;
     } else {
