@@ -245,6 +245,11 @@ export default {
       }
     },
     mousemove(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        return;
+      }
+
       if (this.detail.type == "group") {
         let downType = utils.judgeDownType(event, this);
         if (!downType) {

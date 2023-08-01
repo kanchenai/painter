@@ -65,7 +65,7 @@ let viewList = [
                 type: "div",
                 style: {
                     width: 180,
-                    height: 60,
+                    height: 70,
                     background: "gray",
                     borderRadius: 15,
                 }
