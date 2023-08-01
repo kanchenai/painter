@@ -1,5 +1,6 @@
 <template>
-  <div v-show="!isFocus || $store.state.selectDataIdList.indexOf(fatherDataId)>=0 || $store.state.selectDataIdList.indexOf(data.id)>=0">
+  <div
+      v-show="!isFocus || $store.state.selectDataIdList.indexOf(fatherDataId)>=0 || $store.state.selectDataIdList.indexOf(data.id)>=0">
     <div style="position: absolute;overflow: hidden;z-index: 1;" v-if="type!='img'" :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove">
     </div>
@@ -8,15 +9,20 @@
       <img style="pointer-events: none;" :src="src" :style="{width:style.width,height:style.height}">
     </div>
 
-    <div class="bg" :style="{width:width+'px',height:height+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
-    <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">{{'l:'+left+','+'t:'+top}}</div>
-    <div class="size" :style="{left:left+2+'px',top:top+14+'px'}" v-if="selected">{{'w:'+width+','+'h:'+height}}</div>
+    <div class="bg"
+         :style="{width:width+'px',height:height+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
+    <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">
+      {{ 'l:' + left + ',' + 't:' + top }}
+    </div>
+    <div class="size" :style="{left:left+2+'px',top:top+14+'px'}" v-if="selected">
+      {{ 'w:' + width + ',' + 'h:' + height }}
+    </div>
 
   </div>
 </template>
 <script>
 
-import utils from "@/utils/utils";
+import utils from "@/utils/viewUtils";
 
 /**
  * 只用来布局
@@ -54,7 +60,7 @@ export default {
 
     isFocus() {
       let flag = false;
-      if (this.detail.props.id == "focus") {
+      if (this.detail.props && this.detail.props.id == "focus") {
         flag = true;
       }
 

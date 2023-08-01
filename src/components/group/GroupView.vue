@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="group" ref="group" style="position: absolute;overflow: scroll;" :style="style" @dblclick.stop="editView"
-         @mousedown.stop="mousedown" @mousemove.stop="mousemove">
+         @mousedown.stop="mousedown" @mousemove="mousemove" @mouseup="mouseup">
       <div v-for="(child,index) in data.children" :key="index">
         <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
         <focus-view v-else-if="getDetailById(child.id).type=='focus'" :data="child"></focus-view>
@@ -14,8 +14,12 @@
          :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"
          v-if="detail.type=='group'"></div>
 
-    <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">{{'l:'+left+','+'t:'+top}}</div>
-    <div class="size" :style="{left:left+2+'px',top:top+14+'px'}" v-if="selected">{{'w:'+width+','+'h:'+height}}</div>
+    <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">
+      {{ 'l:' + left + ',' + 't:' + top }}
+    </div>
+    <div class="size" :style="{left:left+2+'px',top:top+14+'px'}" v-if="selected">
+      {{ 'w:' + width + ',' + 'h:' + height }}
+    </div>
 
     <div ref="tag" style="position: absolute;pointer-events: none;overflow: hidden" v-if="showReferLine"
          :style="{width:style.width,height:style.height,left:style.left,top:style.top,}">
@@ -43,7 +47,7 @@
 import ButtonView from "@/components/button/ButtonView.vue";
 import TextView from "@/components/text/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
-import utils from "@/utils/utils";
+import utils from "@/utils/viewUtils";
 import FocusView from "@/components/focus/FocusView.vue";
 import * as events from "events";
 
@@ -256,9 +260,29 @@ export default {
             event.target.style.cursor = "ns-resize";
           }
         }
+        event.stopPropagation();
       }
 
       this.$viewEffect.mousemove(event);
+    },
+
+    mouseup(event) {
+      let preview = this.$movePreview.preview;
+      if (!preview) {
+        return;
+      }
+      event.stopPropagation();
+      //把preview添加到这个group中
+      this.$movePreview.preview = null;
+
+      let rect = this.$refs.group.getBoundingClientRect();
+      let left = rect.left;
+      let top = rect.top;
+
+      preview.style.left -= left;
+      preview.style.top -= top;
+
+      this.$store.commit("addPreview", {fatherId: this.data.id, preview})
     },
 
     getDetailById(id) {

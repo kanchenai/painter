@@ -5,7 +5,6 @@
       <div style="float: right;margin-right: 10px;">
         <el-button class="top-button" size="mini" type="text" @click="addPage">新增Page</el-button>
       </div>
-
     </div>
     <div style="width:100%;height: 1px;background: gray;"></div>
     <el-tree
@@ -15,7 +14,6 @@
         node-key="id"
         :draggable="true"
         default-expand-all
-        :current-node-key="selectedId"
         :expand-on-click-node="false"
         :highlight-current="true"
         :accordion="false"
@@ -72,11 +70,10 @@ import DialogPageEditor from "@/components/dialog/DialogPageEditor.vue";
 import utils from "@/store/utils";
 
 export default {
-  name: "ViewBuilder",
+  name: "ViewTree",
 
   data() {
     return {
-      selectedId: "",
       isWin: true,
     }
   },
@@ -88,16 +85,27 @@ export default {
     treeData() {
       return this.$store.state.viewTreeData;
     },
+    selectId() {
+      let value = "";
+      if (this.$store.state.selectDataIdList.length > 0) {
+        value = this.$store.state.selectDataIdList[0]
+      }
+      return value;
+    },
   },
 
   watch: {
     treeData() {
-      console.log("treeData更新");
+      // console.log("treeData更新");
+    },
+    selectId() {
+      // console.log("selectId更新");
+      this.$refs.tree.setCurrentKey(this.selectId);
     }
   },
 
   created() {
-    window.viewTree= this;
+    window.viewTree = this;
     if (navigator.userAgent.toLowerCase().indexOf("win") > -1) {
       this.isWin = true;
     } else {
@@ -175,12 +183,7 @@ export default {
         confirmButtonText: '确定',
         callback: action => {
           let viewDetailObj = this.$store.state.viewDetailObj;
-          let {ele, imageList} = utils.buildLayout(aimFork.label, aimFork, viewDetailObj);
-          console.log(ele);
-
-          let html = '<template>' +
-              ele.innerHTML
-              + '</template>';
+          let {html, imageList} = utils.getPageHtml(aimFork.label, aimFork, viewDetailObj);
 
           console.log(action)
           if (action == "confirm") {
@@ -323,7 +326,8 @@ export default {
 
 
 .tree {
-  margin-top: 10px;
+//margin-top: 10px; width: 225px; height: 704px;
+  overflow-y: scroll;
 }
 
 .custom-tree-node {
@@ -334,4 +338,5 @@ export default {
   font-size: 14px;
   padding-right: 8px;
 }
+
 </style>

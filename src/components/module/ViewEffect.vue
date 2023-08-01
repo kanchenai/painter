@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="width: 1px;height: 100%;min-height: 720px;float: left;background: gray;"></div>
+    <div style="width: 1px;height: 100%;min-height: 735px;float: left;background: gray;"></div>
     <div style="position: relative;" v-if="data" @mouseup="mouseup" @mouseenter="mouseIn=true"
          @mouseleave="mouseleave">
       <group-view :data="data"></group-view>
@@ -11,10 +11,10 @@
 <script>
 import GroupView from "@/components/group/GroupView.vue";
 import Vue from "vue";
-import utils from "@/utils/utils";
+import utils from "@/utils/viewUtils";
 
 export default {
-  name: "Painter",
+  name: "ViewEffect",
 
   props: {
     pageId: String
@@ -46,7 +46,6 @@ export default {
   watch: {},
 
   created() {
-    window.painter = this;
     Vue.prototype.$viewEffect = this;
 
     this.initKeydown();

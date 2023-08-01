@@ -174,6 +174,29 @@ let option = {
 
                 })
             })
+        },
+
+        addPreview(state, {fatherId, preview}) {
+            console.log({fatherId, preview})
+
+            let detail = {...preview};
+            delete detail.children;
+            delete detail.label;
+            detail = JSON.parse(JSON.stringify(detail));
+            this.commit("addView", {fatherId, data: detail, name: preview.label});
+
+            //复制内部控件
+            if (preview.children && preview.children.length > 0) {
+                let obj = this.getters.getDataById(fatherId);
+                let childId = obj.aimFork.children[obj.aimFork.children.length - 1].id
+                // console.log(childId);
+                preview.children.forEach(childPreview => {
+                    this.commit("addPreview", {fatherId: childId, preview: childPreview});
+                })
+
+            }
+
+
         }
     },
     getters: {

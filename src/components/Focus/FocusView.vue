@@ -4,7 +4,7 @@
     <div class="default-focus" :style="{width:width+'px',height:height+'px',left:(left<3?0:left-3)+'px',top:(top<3?0:top-3)+'px'}"
          v-if="!focus" v-show="selected"></div>
     <div class="focus" :style="style" @dblclick.stop="editView"
-         @mousedown.stop="mousedown" @mousemove.stop="mousemove">
+         @mousedown.stop="mousedown" @mousemove="mousemove">
       <div v-for="(child,index) in data.children" :key="index">
         <text-view v-if="$store.getters.getDetailById(child.id).type=='text'" :data="child"></text-view>
         <base-view v-else :data="child"></base-view>
@@ -17,7 +17,7 @@
 <script>
 
 import BaseView from "@/components/base/BaseView.vue";
-import utils from "@/utils/utils";
+import utils from "@/utils/viewUtils";
 import TextView from "@/components/text/TextView.vue";
 
 /**

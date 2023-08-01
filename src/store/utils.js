@@ -42,6 +42,21 @@ let getForkById = function (fatherFork, fork, id) {
 }
 
 
+let getPageHtml = function (pageName, forkData, viewDetailObj) {
+    let {ele, imageList} = buildLayout(pageName, forkData, viewDetailObj);
+    let html =
+        "```html\n" +
+        "<template>" +
+        ele.innerHTML
+        + '</template>\n```';
+    var regExp_0 = new RegExp("><", "gmi");
+    html = html.replace(regExp_0, ">\n<");
+
+    // var regExp_1 = new RegExp("<", "gmi");
+    // html = html.replace(regExp_1, "\n<");
+    return {html, imageList};
+}
+
 let buildLayout = function (pageName, forkData, viewDetailObj) {
     let id = forkData.id;
     let detail = viewDetailObj[id];
@@ -205,7 +220,7 @@ let getFileNameBy = function (url) {
 
 export default {
     getDataById,
-    buildLayout,
+    getPageHtml,
     writeFile,
     downloadPage,
     getFileNameBy

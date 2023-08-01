@@ -53,7 +53,7 @@
 </template>
 <script>
 
-import utils from "@/utils/utils";
+import utils from "@/utils/viewUtils";
 
 export default {
   name: "ButtonConfig",
