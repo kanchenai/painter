@@ -97,6 +97,110 @@ let viewList = [
         ]
     },
     {
+        label: "按钮（中）",
+        type: "focus",
+        style: {
+            width: 100,
+            height: 50,
+        },
+        children: [
+            {
+                label: "背景",
+                type: "div",
+                style: {
+                    width: 100,
+                    height: 50,
+                    background: "#808080",
+                    borderRadius: 15,
+                }
+            },
+            {
+                label: "焦点",
+                type: "div",
+                style: {
+                    width: 100,
+                    height: 50,
+                    background: "#ff0000",
+                    borderRadius: 15,
+                },
+                props: {
+                    id: "focus"
+                }
+            },
+            {
+                label: "文本",
+                type: "text",
+                style: {
+                    left: 0,
+                    top: 0,
+                    width: 100,
+                    height: 50,
+                    background: "",
+                    color: "#ffffff",
+                    fontSize: 18,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textAlign: "center",
+                },
+                props: {
+                    value: "按钮"
+                }
+            }
+        ]
+    },
+    {
+        label: "按钮（小）",
+        type: "focus",
+        style: {
+            width: 80,
+            height: 40,
+        },
+        children: [
+            {
+                label: "背景",
+                type: "div",
+                style: {
+                    width: 80,
+                    height: 40,
+                    background: "#808080",
+                    borderRadius: 10,
+                }
+            },
+            {
+                label: "焦点",
+                type: "div",
+                style: {
+                    width: 80,
+                    height: 40,
+                    background: "#ff0000",
+                    borderRadius: 10,
+                },
+                props: {
+                    id: "focus"
+                }
+            },
+            {
+                label: "文本",
+                type: "text",
+                style: {
+                    left: 0,
+                    top: 0,
+                    width: 80,
+                    height: 40,
+                    background: "",
+                    color: "#ffffff",
+                    fontSize: 14,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textAlign: "center",
+                },
+                props: {
+                    value: "按钮"
+                }
+            }
+        ]
+    },
+    {
         label: "内容推荐位",
         type: "focus",
         style: {
@@ -171,7 +275,104 @@ let viewList = [
             }
         ]
     },
+    {
+        label: "小图推荐位",
+        type: "focus",
+        style: {
+            width: 176,
+            height: 128,
+        },
+        children: [
+            {
+                label: "内容图片",
+                type: "img",
+                style: {
+                    width: 176,
+                    height: 128,
+                    borderRadius: 7,
+                },
+            }
+        ]
+    },
+
+    {
+        label: "内容推荐位",
+        type: "focus",
+        style: {
+            width: 216,
+            height: 280,
+        },
+        children: [
+            {
+                label: "内容图片",
+                type: "img",
+                style: {
+                    width: 216,
+                    height: 280,
+                    borderRadius: 7,
+                },
+            }
+        ]
+    },
+    {
+        label: "内容大推荐位",
+        type: "focus",
+        style: {
+            width: 440,
+            height: 280,
+        },
+        children: [
+            {
+                label: "内容图片",
+                type: "img",
+                style: {
+                    width: 440,
+                    height: 280,
+                    borderRadius: 7,
+                },
+            }
+        ]
+    },
+    {
+        label: "内容小推荐位",
+        type: "focus",
+        style: {
+            width: 216,
+            height: 134,
+        },
+        children: [
+            {
+                label: "内容图片",
+                type: "img",
+                style: {
+                    width: 216,
+                    height: 134,
+                    borderRadius: 7,
+                },
+            }
+        ]
+    },
+    {
+        label: "内容长推荐位",
+        type: "focus",
+        style: {
+            width: 1124,
+            height: 134,
+        },
+        children: [
+            {
+                label: "内容图片",
+                type: "img",
+                style: {
+                    width: 1124,
+                    height: 134,
+                    borderRadius: 7,
+                },
+            }
+        ]
+    },
 ];
 
+// 440 + 12 + 216 + 12 + 216 + 12 + 216
 
 export default viewList;

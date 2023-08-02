@@ -35,6 +35,11 @@ export default {
     }
   },
 
+  created() {
+    window.dialogPageEditor = this;
+    Vue.prototype.$dialogPageEditor = this;
+  },
+
   methods: {
     addShow() {
       this.visible = true;

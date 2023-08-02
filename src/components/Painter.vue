@@ -30,6 +30,9 @@
         direction="ltr">
       <div style="text-align: left" v-html="code"></div>
     </el-drawer>
+
+    <dialog-view-editor ref="dialogViewEditor"></dialog-view-editor>
+    <dialog-page-editor ref="dialogPageEditor"></dialog-page-editor>
   </div>
 </template>
 
@@ -41,6 +44,8 @@ import utils from "@/store/utils";
 import {marked} from "marked";
 import hljs from "highlight.js";
 import MovePreview from "@/components/module/MovePreview.vue";
+import DialogViewEditor from "@/components/dialog/DialogViewEditor.vue";
+import DialogPageEditor from "@/components/dialog/DialogPageEditor.vue";
 
 export default {
   name: 'App',
@@ -137,6 +142,8 @@ export default {
   },
 
   components: {
+    DialogPageEditor,
+    DialogViewEditor,
     MovePreview,
     AllPreview,
     ViewEffect,

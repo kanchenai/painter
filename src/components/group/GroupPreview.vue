@@ -9,9 +9,7 @@
         <base-preview v-else :detail="child" is-root="false"></base-preview>
       </div>
     </div>
-    <div class="bg"
-         :style="bgStyle"
-         v-if="detail.type=='group'"></div>
+    <div class="bg" :style="bgStyle" v-if="detail.type=='group'"></div>
   </div>
 </template>
 <script>
@@ -75,20 +73,6 @@ export default {
 
       return value;
     },
-    scrollHeight() {
-      let value = this.height;
-      if (this.$refs.group) {
-        value = this.$refs.group.scrollHeight;
-      }
-      return value;
-    },
-    scrollWidth() {
-      let value = this.width;
-      if (this.$refs.group) {
-        value = this.$refs.group.scrollWidth;
-      }
-      return value;
-    },
     style() {
       let value = {}
 
@@ -128,7 +112,7 @@ export default {
     bgStyle() {
       let value = {...this.style}
       value.background = "gray";
-      value.opacity = 0.6;
+      value.opacity = 0.4;
       return value;
     }
   },

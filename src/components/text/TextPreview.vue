@@ -8,7 +8,7 @@
 import viewUtils from "@/utils/viewUtils";
 
 export default {
-  name: "TextView",
+  name: "TextPreview",
   props: {
     detail: Object,
     moving: {

@@ -60,13 +60,9 @@
         </span>
       </span>
     </el-tree>
-    <dialog-view-editor ref="dialogViewEditor"></dialog-view-editor>
-    <dialog-page-editor ref="dialogPageEditor"></dialog-page-editor>
   </div>
 </template>
 <script>
-import DialogViewEditor from "@/components/dialog/DialogViewEditor.vue";
-import DialogPageEditor from "@/components/dialog/DialogPageEditor.vue";
 import utils from "@/store/utils";
 
 export default {
@@ -159,18 +155,18 @@ export default {
 
   methods: {
     addPage() {
-      this.$refs.dialogPageEditor.addShow();
+      this.$dialogPageEditor.addShow();
     },
     addView(fatherId) {
-      this.$refs.dialogViewEditor.addShow(fatherId);
+      this.$dialogViewEditor.addShow(fatherId);
     },
 
     editPage(id) {
-      this.$refs.dialogPageEditor.editShow(id);
+      this.$dialogPageEditor.editShow(id);
     },
 
     editView(id) {
-      this.$refs.dialogViewEditor.editShow(id);
+      this.$dialogViewEditor.editShow(id);
     },
 
     removeView(id) {
@@ -301,8 +297,6 @@ export default {
   },
 
   components: {
-    DialogViewEditor,
-    DialogPageEditor
   }
 }
 </script>
