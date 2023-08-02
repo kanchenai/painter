@@ -1,15 +1,18 @@
 <template>
-  <div v-show="visible">
-    <div style="position: absolute;overflow: hidden;z-index: 1;" v-if="type!='img'" :style="style"
-         @mousedown="mousedown" @mousemove="mousemove">
+  <div class="base-container" v-show="visible" @mousedown.stop="mousedown" @mouseup.stop="mouseup"
+       @mousemove.stop="mousemove">
+    <div style="position: absolute;overflow: hidden;z-index: 1;" v-if="type!='img'" :style="style">
     </div>
-    <!--    <div style="position: absolute;z-index: 1;" v-else :style="style" @dblclick="editView"-->
-    <!--         @mousedown="mousedown" @mousemove="mousemove">-->
-    <!--      <img style="pointer-events: none;" :src="src" :style="{width:style.width,height:style.height}">-->
-    <!--    </div>-->
+    <div style="position: absolute;z-index: 1;" v-else :style="style">
+      <div :style="defaultImgBg">
+        <img style="pointer-events: none;" :style="imgStyle" src="../../assets/default-pic.png">
+      </div>
+    </div>
   </div>
 </template>
 <script>
+
+import viewUtils from "@/utils/viewUtils";
 
 /**
  * 只用来布局
@@ -107,33 +110,81 @@ export default {
       value.width = this.width + 'px';
       value.height = this.height + 'px';
 
-      let left = this.left;
-      if (!this.isFocus) {
-        if (left < 0) {
-          left = 0;
-        }
-      }
-
-      value.left = left + "px";
-
-      let top = this.top;
-      if (!this.isFocus) {
-        if (top < 0) {
-          top = 0;
-        }
-      }
-
-      value.top = top + "px";
-
       value.background = this.detail.style.background;
-      value.borderRadius = this.detail.style.borderRadius + "px";
+      if (this.detail.style.borderRadius || this.detail.style.borderRadius == 0) {
+        value.borderRadius = this.detail.style.borderRadius + "px";
+      }
 
-      if (this.isFocus) {
+      if (!this.isRoot) {
         value.pointerEvents = "none";
+      }
+
+      if (this.isRoot && !this.moving) {
+        let {rate, left, top} = viewUtils.correctPreviewBy(this.width, this.height);
+
+        value.left = left + 'px';
+        value.top = top + 'px';
+
+        console.log("{rate, left, top}", {rate, left, top})
+
+        value.transform = "scale(" + rate + ")";
+      } else {
+        let left = this.left;
+        if (!this.isFocus) {
+          if (left < 0) {
+            left = 0;
+          }
+        }
+
+        value.left = left + "px";
+
+        let top = this.top;
+        if (!this.isFocus) {
+          if (top < 0) {
+            top = 0;
+          }
+        }
+
+        value.top = top + "px";
       }
 
       return value;
     },
+
+    defaultImgBg() {
+      let value = {...this.style};
+
+      value.background = "gray";
+      value.opacity = 0.6;
+      delete value.transform;
+
+      return value;
+    },
+
+    imgStyle() {
+      let value = {};
+
+      let min = 500;
+      if (this.width < this.height) {
+        if (this.width < min) {
+          min = this.width * 0.8;
+        }
+      } else {
+        if (this.height < min) {
+          min = this.height * 0.8;
+        }
+      }
+
+      value.width = min + "px";
+      value.left = (this.width - min) / 2 + "px";
+      value.top = (this.height - min) / 2 + "px";
+
+      value.position = "absolute";
+
+      return value;
+
+    },
+
     src() {
       let value = "";
 
@@ -146,29 +197,25 @@ export default {
   },
 
   methods: {
-
     mousedown(event) {
+      this.$movePreview.selectPreview(this.detail);
+      this.$movePreview.mousedown(event);
     },
+
+    mouseup(event) {
+      this.$movePreview.mouseup(event);
+    },
+
     mousemove(event) {
+      this.$movePreview.mousemove(event);
     }
   },
 }
 </script>
 <style scoped>
-.bg {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0.8;
-  z-index: 1;
-}
-
-.size,
-.position {
-  position: absolute;
-  font-size: 12px;
-  line-height: 12px;
-  padding: 0 2px;
-  color: white;
-  z-index: 1;
+.base-container {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
 </style>

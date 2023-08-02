@@ -1,12 +1,14 @@
 <template>
-  <div
-      v-show="!isFocus || $store.state.selectDataIdList.indexOf(fatherDataId)>=0 || $store.state.selectDataIdList.indexOf(data.id)>=0">
+  <div v-show="visible">
     <div style="position: absolute;overflow: hidden;z-index: 1;" v-if="type!='img'" :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove">
     </div>
     <div style="position: absolute;z-index: 1;" v-else :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove">
-      <img style="pointer-events: none;" :src="src" :style="{width:style.width,height:style.height}">
+      <img style="pointer-events: none;" :src="src" v-if="src" :style="{width:style.width,height:style.height}">
+      <div v-else :style="defaultImgBg">
+        <img style="pointer-events: none;" src="../../assets/default-pic.png" :style="defaultImgStyle">
+      </div>
     </div>
 
     <div class="bg"
@@ -17,7 +19,6 @@
     <div class="size" :style="{left:left+2+'px',top:top+14+'px'}" v-if="selected">
       {{ 'w:' + width + ',' + 'h:' + height }}
     </div>
-
   </div>
 </template>
 <script>
@@ -34,6 +35,16 @@ export default {
   },
 
   computed: {
+    visible() {
+      let flag = false;
+      if(!this.isFocus
+          || this.$store.state.selectDataIdList.indexOf(this.fatherDataId)>=0
+          || this.$store.state.selectDataIdList.indexOf(this.data.id)>=0){
+        flag = true;
+      }
+
+      return flag;
+    },
     fatherDataId() {
       let {fatherFork} = this.$store.getters.getDataById(this.data.id);
       return fatherFork.id
@@ -142,10 +153,44 @@ export default {
 
       return value;
     },
+
+    defaultImgBg() {
+      let value = {...this.style};
+      value.pointerEvents = "none";
+      value.background = "gray";
+      value.opacity = 0.6;
+
+      return value;
+    },
+
+    defaultImgStyle() {
+      let value = {};
+
+      let min = 500;
+      if (this.width < this.height) {
+        if (this.width < min) {
+          min = this.width * 0.8;
+        }
+      } else {
+        if (this.height < min) {
+          min = this.height * 0.8;
+        }
+      }
+
+      value.width = min + "px";
+      value.left = (this.width - min) / 2 + "px";
+      value.top = (this.height - min) / 2 + "px";
+
+      value.position = "absolute";
+
+      return value;
+
+    },
+
     src() {
       let value = "";
 
-      if (this.detail.props && this.detail.props.src.url) {
+      if (this.detail.props && this.detail.props.src && this.detail.props.src.url) {
         value = this.detail.props.src.url;
       }
 
@@ -161,7 +206,6 @@ export default {
   methods: {
     editView() {
       if (this.isFocus || utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
-
       } else {
         this.$dialogViewEditor.editShow(this.data.id);
       }
@@ -177,6 +221,11 @@ export default {
       }
     },
     mousemove(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        return;
+      }
+
       if (this.isFocus || utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
 
       } else {

@@ -87,6 +87,11 @@ export default {
       let viewDetailObj = this.$store.state.viewDetailObj;
       let {html} = utils.getPageHtml(aimFork.label, aimFork, viewDetailObj);
 
+      html =
+          "```html\n" +
+          html
+          + '\n```';
+
       this.$nextTick(() => {
         hljs.highlightAll();
       })

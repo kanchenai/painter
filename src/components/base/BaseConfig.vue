@@ -6,7 +6,7 @@
         <el-radio style="float: left;" :label="''">否</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="坐标(left,top)" v-if="data.props.id==''">
+    <el-form-item label="坐标(left,top)" v-if="!data.props.id">
       <el-col :span="11">
         <el-input v-model="data.style.left" type="number" placeholder="left"></el-input>
       </el-col>

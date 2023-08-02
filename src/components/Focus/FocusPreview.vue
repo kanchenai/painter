@@ -3,8 +3,10 @@
     <div class="default-focus" :style="focusStyle" v-if="!focus" v-show="selected"></div>
     <div class="focus" :style="style">
       <div v-for="(child,index) in detail.children" :key="index">
-        <base-preview :detail="child" :father-selected="selected" :father-height="height"
+        <text-preview v-if="child.type=='text'" :detail="child" :is-root="false"></text-preview>
+        <base-preview v-else :detail="child" :father-selected="selected" :father-height="height"
                       :father-width="width" :is-root="false"></base-preview>
+
       </div>
     </div>
   </div>
@@ -13,6 +15,7 @@
 
 import viewUtils from "@/utils/viewUtils";
 import BasePreview from "@/components/base/BasePreview.vue";
+import TextPreview from "@/components/text/TextPreview.vue";
 
 /**
  * 只用来布局
@@ -143,10 +146,6 @@ export default {
   watch: {},
 
   methods: {
-    addTo(id) {
-
-    },
-
     mousedown(event) {
       this.selected = true;
       this.$movePreview.selectPreview(this.detail);
@@ -164,7 +163,7 @@ export default {
     },
   },
 
-  components: {BasePreview}
+  components: {BasePreview,TextPreview}
 }
 </script>
 <style scoped>
@@ -172,14 +171,6 @@ export default {
   width: 100%;
   height: 100%;
   cursor: pointer;
-}
-
-.bg {
-  position: absolute;
-  border: 1px dashed white;
-  cursor: pointer;
-  opacity: 0.8;
-  z-index: 1;
 }
 
 .default-focus {
@@ -193,17 +184,5 @@ export default {
 .focus {
   position: absolute;
   overflow: hidden;
-}
-
-.size,
-.position {
-  position: absolute;
-  font-size: 12px;
-  line-height: 12px;
-  padding: 0 2px;
-  color: white;
-  z-index: 1;
-  opacity: 0.8;
-  pointer-events: none;
 }
 </style>

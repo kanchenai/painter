@@ -21,7 +21,7 @@
       {{ 'w:' + width + ',' + 'h:' + height }}
     </div>
 
-    <div ref="tag" style="position: absolute;pointer-events: none;overflow: hidden" v-if="showReferLine"
+    <div ref="tag" style="position: absolute;pointer-events: none;overflow: hidden;z-index: 1;" v-if="showReferLine"
          :style="{width:style.width,height:style.height,left:style.left,top:style.top,}">
       <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index"
            :style="{left:left+'px',height:scrollHeight+'px'}"></div>
@@ -29,13 +29,13 @@
            :style="{top:top+'px',width:scrollWidth+'px'}"></div>
     </div>
 
-    <div ref="vLineTag" style="position: absolute;pointer-events: none;overflow: hidden" v-if="showReferLine"
+    <div ref="vLineTag" style="position: absolute;pointer-events: none;overflow: hidden;z-index: 1;" v-if="showReferLine"
          :style="{width:style.width,height:style.height,left:style.left,top:style.top,}">
       <div class="v-short-line" v-for="(num,index) of Math.ceil(scrollWidth/10)" :key="'v-s'+index"
            :style="{left:index*10+'px',height:((index%10==0)?15:((index%5==0)?10:(5)))+'px'}"></div>
     </div>
 
-    <div ref="hLineTag" style="position: absolute;pointer-events: none;overflow: hidden" v-if="showReferLine"
+    <div ref="hLineTag" style="position: absolute;pointer-events: none;overflow: hidden;z-index: 1;" v-if="showReferLine"
          :style="{width:style.width,height:style.height,left:style.left,top:style.top,}">
       <div class="h-short-line" v-for="(num,index) of Math.ceil(scrollHeight/10)" :key="'h-s'+index"
            :style="{top:index*10+'px',width:((index%10==0)?15:((index%5==0)?10:(5)))+'px'}"></div>
@@ -49,7 +49,6 @@ import TextView from "@/components/text/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
 import utils from "@/utils/viewUtils";
 import FocusView from "@/components/focus/FocusView.vue";
-import * as events from "events";
 
 /**
  * 只用来布局

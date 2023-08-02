@@ -1,10 +1,55 @@
 let viewList = [
     {
+        label: "楼层组",
+        type: "group",
+        style: {
+            width: 1280,
+            height: 300,
+            overflow: "hidden",
+        }
+    },
+    {
+        label: "文字",
+        type: "text",
+        style: {
+            width: 176,
+            height: 30,
+            background: "",
+            color: "#ffffff",
+            fontSize: 22,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textAlign: "left",
+        },
+        props: {
+            value: "这是一段示例文字"
+        }
+    },
+    {
+        label: "页面背景",
+        type: "img",
+        style: {
+            width: 1280,
+            height: 720,
+            borderRadius: 0,
+        },
+    },
+    {
+        label: "横线",
+        type: "div",
+        style: {
+            width: 1280,
+            height: 1,
+            background: "#ff0000",
+            borderRadius: 0,
+        },
+    },
+    {
         label: "按钮",
         type: "focus",
         style: {
             width: 120,
-            height: 50,
+            height: 60,
         },
         children: [
             {
@@ -12,8 +57,8 @@ let viewList = [
                 type: "div",
                 style: {
                     width: 120,
-                    height: 50,
-                    background: "gray",
+                    height: 60,
+                    background: "#808080",
                     borderRadius: 15,
                 }
             },
@@ -22,8 +67,8 @@ let viewList = [
                 type: "div",
                 style: {
                     width: 120,
-                    height: 50,
-                    background: "red",
+                    height: 60,
+                    background: "#ff0000",
                     borderRadius: 15,
                 },
                 props: {
@@ -37,10 +82,10 @@ let viewList = [
                     left: 0,
                     top: 0,
                     width: 120,
-                    height: 50,
+                    height: 60,
                     background: "",
                     color: "#ffffff",
-                    fontSize: 18,
+                    fontSize: 22,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textAlign: "center",
@@ -51,126 +96,80 @@ let viewList = [
             }
         ]
     },
-
     {
-        label: "按钮",
+        label: "内容推荐位",
         type: "focus",
         style: {
-            width: 180,
-            height: 70,
+            width: 176,
+            height: 302,
         },
         children: [
             {
-                label: "背景",
-                type: "div",
+                label: "内容图片",
+                type: "img",
                 style: {
-                    width: 180,
-                    height: 70,
-                    background: "gray",
-                    borderRadius: 15,
+                    width: 176,
+                    height: 272,
+                    borderRadius: 7,
+                },
+            },
+            {
+                label: "内容名",
+                type: "text",
+                style: {
+                    width: 176,
+                    height: 30,
+                    top: 272,
+                    background: "#ffffff",
+                    color: "#000000",
+                    fontSize: 18,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textAlign: "center",
+                },
+                props: {
+                    value: "这是一段示例内容名"
                 }
             }
         ]
     },
     {
-        label: "按钮",
-        type: "focus",
-        style: {
-            width: 380,
-            height: 270,
-            background:"red"
-        },
-        children: []
-    },
-    {
-        label: "按钮",
+        label: "内容推荐位",
         type: "focus",
         style: {
             width: 176,
             height: 272,
-            background:"red"
         },
-        children: []
+        children: [
+            {
+                label: "内容图片",
+                type: "img",
+                style: {
+                    width: 176,
+                    height: 272,
+                    borderRadius: 7,
+                },
+            }
+        ]
     },
     {
-        label: "按钮",
+        label: "大图推荐位",
         type: "focus",
         style: {
-            width: 480,
-            height: 270,
-            background:"red"
+            width: 430,
+            height: 272,
         },
-        children: []
-    },
-    {
-        label: "按钮",
-        type: "focus",
-        style: {
-            width: 176,
-            height: 106,
-            background:"red"
-        },
-        children: []
-    },
-    {
-        label: "按钮",
-        type: "focus",
-        style: {
-            width: 176,
-            height: 106,
-            background:"red"
-        },
-        children: []
-    },
-    {
-        label: "按钮",
-        type: "focus",
-        style: {
-            width: 176,
-            height: 106,
-            background:"red"
-        },
-        children: []
-    },
-    {
-        label: "按钮",
-        type: "focus",
-        style: {
-            width: 176,
-            height: 106,
-            background:"red"
-        },
-        children: []
-    },
-    {
-        label: "按钮",
-        type: "focus",
-        style: {
-            width: 176,
-            height: 106,
-            background:"red"
-        },
-        children: []
-    },
-    {
-        label: "按钮",
-        type: "focus",
-        style: {
-            width: 176,
-            height: 106,
-            background:"red"
-        },
-        children: []
-    },
-    {
-        label: "按钮",
-        type: "focus",
-        style: {
-            width: 176,
-            height: 106,
-            background:"red"
-        },
-        children: []
+        children: [
+            {
+                label: "内容图片",
+                type: "img",
+                style: {
+                    width: 430,
+                    height: 272,
+                    borderRadius: 7,
+                },
+            }
+        ]
     },
 ];
 

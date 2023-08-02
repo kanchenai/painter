@@ -5,6 +5,13 @@
       {{ text }}
     </div>
     <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:style.left,top:style.top,background:selected?'gray':''}"></div>
+
+    <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">
+      {{ 'l:' + left + ',' + 't:' + top }}
+    </div>
+    <div class="size" :style="{left:left+2+'px',top:top+14+'px'}" v-if="selected">
+      {{ 'w:' + width + ',' + 'h:' + height }}
+    </div>
   </div>
 </template>
 <script>
@@ -148,5 +155,14 @@ export default {
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE/Edge */
   user-select: none;
+}
+.size,
+.position {
+  position: absolute;
+  font-size: 12px;
+  line-height: 12px;
+  padding: 0 2px;
+  color: white;
+  z-index: 1;
 }
 </style>

@@ -1,11 +1,18 @@
 <template>
   <div class="move-container" v-if="preview">
+    <text-preview v-if="preview.type=='text'" :detail="preview" :moving="true"></text-preview>
     <focus-preview v-if="preview.type=='focus'" :detail="preview" :moving="true"></focus-preview>
+    <group-preview v-if="preview.type=='group'" :detail="preview" :moving="true"></group-preview>
+    <base-preview v-if="!preview.type||preview.type=='img'||preview.type=='div'" :detail="preview"
+                  :moving="true"></base-preview>
   </div>
 </template>
 <script>
 import FocusPreview from "@/components/focus/FocusPreview.vue";
 import Vue from "vue";
+import TextPreview from "@/components/text/TextPreview.vue";
+import BasePreview from "@/components/base/BasePreview.vue";
+import GroupPreview from "@/components/group/GroupPreview.vue";
 
 export default {
   name: "MovePreview",
@@ -18,7 +25,7 @@ export default {
 
   watch: {
     preview() {
-      // console.log("preview", this.preview);
+      console.log("preview", this.preview);
     }
   },
 
@@ -31,18 +38,16 @@ export default {
       this.preview = JSON.parse(JSON.stringify(preview));
     },
     mousedown(event) {
-      console.log("mousedown")
       if (!this.preview) {
         return;
       }
+
       this.preview.style.left = event.clientX - this.preview.style.width / 2;
       this.preview.style.top = event.clientY - this.preview.style.height / 2;
 
       this.preview.__ob__.dep.notify();
     },
     mouseup(event) {
-      console.log("mouseup");
-      //TODO 添加view
       this.preview = null;
     },
     mousemove(event) {
@@ -56,12 +61,11 @@ export default {
       this.preview.__ob__.dep.notify();
     },
     mouseleave(event) {
-      console.log("mouseleave");
       this.preview = null;
     }
   },
 
-  components: {FocusPreview},
+  components: {GroupPreview, BasePreview, TextPreview, FocusPreview},
 }
 </script>
 <style scoped>

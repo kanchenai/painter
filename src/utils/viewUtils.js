@@ -57,7 +57,7 @@ let getImageSize = function (file) {
  * 计算不同size的view在预览中对应的校准
  * @param width
  * @param height
- * @returns {number}
+ * @returns {Object}
  */
 let correctPreviewBy = function (width, height) {
     let rateV = 60 * 0.8 / height;

@@ -45,10 +45,9 @@ let getForkById = function (fatherFork, fork, id) {
 let getPageHtml = function (pageName, forkData, viewDetailObj) {
     let {ele, imageList} = buildLayout(pageName, forkData, viewDetailObj);
     let html =
-        "```html\n" +
         "<template>" +
         ele.innerHTML
-        + '</template>\n```';
+        + '</template>';
     var regExp_0 = new RegExp("><", "gmi");
     html = html.replace(regExp_0, ">\n<");
 
