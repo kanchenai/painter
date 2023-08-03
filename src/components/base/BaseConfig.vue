@@ -29,7 +29,7 @@
     </el-form-item>
     <el-form-item label="背景颜色" v-if="type!='img'">
       <el-color-picker style="float: left;" v-model="data.style.background"></el-color-picker>
-      <div style="float: left;margin-left: 10px;">{{ data.style.background || "透明" }}</div>
+      <div style="float: left;margin-left: 10px;">{{ data.style.background || "无" }}</div>
     </el-form-item>
     <el-form-item label="图片" v-if="type=='img'">
       <div style="width: 100%;">

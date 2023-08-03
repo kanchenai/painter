@@ -4,7 +4,7 @@
     <div class="default-focus" :style="{width:width+'px',height:height+'px',left:(left<3?0:left-3)+'px',top:(top<3?0:top-3)+'px'}"
          v-if="!focus" v-show="selected"></div>
     <div class="focus" :style="style" @dblclick.stop="editView"
-         @mousedown.stop="mousedown" @mousemove="mousemove">
+         @mousedown.stop="mousedown" @mousemove.stop="mousemove" @mouseup.stop="mouseup" >
       <div v-for="(child,index) in data.children" :key="index">
         <text-view v-if="$store.getters.getDetailById(child.id).type=='text'" :data="child"></text-view>
         <base-view v-else :data="child"></base-view>
@@ -163,10 +163,12 @@ export default {
     },
     mousemove(event) {
       let downType = utils.judgeDownType(event, this);
+      console.log("downType",downType)
       if (!downType) {
         event.target.style.cursor = "auto";
         return;
       }
+
       if (downType == "move") {
         event.target.style.cursor = "pointer";
       } else {
@@ -177,6 +179,10 @@ export default {
         }
       }
       this.$viewEffect.mousemove(event);
+    },
+
+    mouseup(event) {
+      this.$viewEffect.mouseup(event);
     },
   },
 
@@ -214,5 +220,9 @@ export default {
   z-index: 1;
   opacity: 0.8;
   pointer-events: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE/Edge */
+  user-select: none;
 }
 </style>

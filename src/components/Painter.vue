@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-container ref="mainFun" style="position:absolute;width:100%;overflow: hidden;">
+    <el-container ref="mainFun" style="position:absolute;width:100%;">
       <el-container>
-        <el-aside style="position:relative;padding: 0;height: 100%;overflow-y: hidden;"
+        <el-aside style="position:relative;padding: 0;height: 735px;overflow: hidden;"
                   :width="openFolder?'250px':'25px'">
           <div style="position:relative;height: 735px;width: 25px;float: left;background: #dcdfe6;">
             <el-button :icon="openFolder?'el-icon-folder-opened':'el-icon-folder'" type="text"

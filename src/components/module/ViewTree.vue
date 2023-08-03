@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tree-container">
     <div class="top-container">
       <div class="title">Page列表</div>
       <div style="float: right;margin-right: 10px;">
@@ -7,21 +7,27 @@
       </div>
     </div>
     <div style="width:100%;height: 1px;background: gray;"></div>
-    <el-tree
-        class="tree"
-        ref="tree"
-        :data="treeData"
-        node-key="id"
-        :draggable="true"
-        default-expand-all
-        :expand-on-click-node="false"
-        :highlight-current="true"
-        :accordion="false"
-        @current-change="currentChange"
-        @node-drag-end="nodeDragEnd"
-        :allow-drop="allowDrop">
+    <div>
+      <el-tree
+          class="tree"
+          ref="tree"
+          :data="treeData"
+          node-key="id"
+          :draggable="true"
+          default-expand-all
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          :accordion="false"
+          @current-change="currentChange"
+          @node-drag-end="nodeDragEnd"
+          :allow-drop="allowDrop">
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
+        <span style="max-width: 50px;overflow:hidden;" v-if="getDetailById(data.id).type!='fragment'">{{
+            node.label
+          }}</span>
+        <span style="max-width: 50px;overflow:hidden;" v-else :style="{color:fragmentLabelColor(node)}">{{
+            node.label
+          }}</span>
         <span>
           <el-button
               type="text"
@@ -59,7 +65,8 @@
           </el-button>
         </span>
       </span>
-    </el-tree>
+      </el-tree>
+    </div>
   </div>
 </template>
 <script>
@@ -158,7 +165,21 @@ export default {
       this.$dialogPageEditor.addShow();
     },
     addView(fatherId) {
-      this.$dialogViewEditor.addShow(fatherId);
+      let fatherDetail = this.getDetailById(fatherId);
+      if (fatherDetail.type == "frame") {
+        let fragmentData = {
+          type: "fragment",
+          style: {
+            width: fatherDetail.style.width,
+            height: fatherDetail.style.height,
+          }
+        }
+
+        this.$store.commit("addView", {fatherId, data: fragmentData, name: "fragment"})
+      } else {
+        this.$dialogViewEditor.addShow(fatherId);
+      }
+
     },
 
     editPage(id) {
@@ -197,6 +218,19 @@ export default {
         this.$store.commit("selectView", {id: data.id});
       } else {
         this.$store.commit("selectView", {id: data.id});
+
+        if (detail.type == "fragment") {
+          let parentData = node.parent.data;
+          let parentDetail = this.$store.getters.getDetailById(node.parent.data.id);
+          for (let i = 0; i < parentData.children.length; i++) {
+            if (parentData.children[i].id == data.id) {
+              parentDetail.other.selectedIndex = i;
+              break;
+            }
+          }
+
+          this.$store.state.viewDetailObj.__ob__.dep.notify();
+        }
       }
     },
 
@@ -211,6 +245,12 @@ export default {
         if (type == "inner") {
           if (draggingDetail.type == "page") {
             flag = false;
+          } else if (dropDetail.type == "focus") {
+            if (draggingDetail.type == "div" || draggingDetail.type == "img" || draggingDetail.type == "text") {
+              flag = true;
+            } else {
+              flag = false;
+            }
           } else {
             if (dropDetail.type == "div" || dropDetail.type == "img" || dropDetail.type == "text") {
               flag = false;
@@ -293,14 +333,28 @@ export default {
 
       console.log("copy")
       this.$store.commit("pasteView");
+    },
+
+    fragmentLabelColor(node) {
+      let parentDetail = this.getDetailById(node.parent.data.id);
+      let selectedId = node.parent.data.children[parentDetail.other.selectedIndex].id;
+
+      let value = "black";
+      if (selectedId == node.data.id) {
+        value = "#ffde00";
+      }
+      return value;
     }
   },
 
-  components: {
-  }
+  components: {}
 }
 </script>
 <style scoped>
+.tree-container {
+  overflow: hidden;
+}
+
 .top-container {
   display: flex;
   align-items: center;
@@ -318,10 +372,10 @@ export default {
   line-height: 30px;
 }
 
-
 .tree {
-//margin-top: 10px; width: 225px; height: 704px;
-  overflow-y: scroll;
+  width: 225px;
+  height: 705px;
+  overflow: scroll;
 }
 
 .custom-tree-node {

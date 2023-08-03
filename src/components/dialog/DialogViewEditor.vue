@@ -6,7 +6,8 @@
       width="50%">
     <el-form ref="form" size="mini" label-width="150px">
       <el-form-item label="控件类型">
-        <el-select style="width: 100%" v-model="type" :disabled="editType=='edit'" :clearable="true" :filterable="true" placeholder="控件类型">
+        <el-select style="width: 100%" v-model="type" :disabled="editType=='edit'" :clearable="true" :filterable="true"
+                   placeholder="控件类型">
           <el-option v-for="(item,index) in viewTypeList" :key="index" :label="item.label"
                      :value="item.type"></el-option>
         </el-select>
@@ -16,9 +17,11 @@
       </el-form-item>
     </el-form>
     <group-config ref="groupConfig" v-if="type=='group'"></group-config>
+    <frame-config ref="frameConfig" v-if="type=='frame'"></frame-config>
     <focus-config ref="focusConfig" v-if="type=='focus'"></focus-config>
     <button-config ref="buttonConfig" v-if="type=='button'"></button-config>
-    <base-config ref="baseConfig" v-if="type=='div'||type=='img'" :father-data-id="fatherDataId" :type="type"></base-config>
+    <base-config ref="baseConfig" v-if="type=='div'||type=='img'" :father-data-id="fatherDataId"
+                 :type="type"></base-config>
     <text-config ref="textConfig" v-if="type=='text'"></text-config>
     <div style="width: 100%">
       <el-button type="primary" size="mini" @click="submit">确认</el-button>
@@ -33,6 +36,7 @@ import GroupConfig from "@/components/group/GroupConfig.vue";
 import FocusConfig from "@/components/focus/FocusConfig.vue";
 import BaseConfig from "@/components/base/BaseConfig.vue";
 import TextConfig from "@/components/text/TextConfig.vue";
+import FrameConfig from "@/components/frame/FrameConfig.vue";
 
 export default {
   name: "DialogViewEditor",
@@ -69,7 +73,7 @@ export default {
           type: "text"
         },
       ];
-      if (this.editType == "edit" || this.fatherDetail.type == "group" || this.fatherDetail.type == "page") {
+      if (this.editType == "edit" || this.fatherDetail.type == "group" || this.fatherDetail.type == "page" || this.fatherDetail.type == "fragment") {
         value = value.concat([
           {
             label: "Group",
@@ -84,6 +88,13 @@ export default {
           //   type: "button"
           // }
         ])
+      }
+
+      if (this.fatherDetail.type == "page") {
+        value.push({
+          label: "Frame",
+          type: "frame"
+        })
       }
 
       return value;
@@ -124,6 +135,24 @@ export default {
 
       if (this.editType == "add") {
         this.$store.commit("addView", {fatherId: this.fatherDataId, data, name: this.name})
+
+        if (data.type == "frame") {
+          let {aimFork} = this.$store.getters.getDataById(this.fatherDataId);
+
+          let frameData = aimFork.children[aimFork.children.length - 1];
+
+          let fragmentData = {
+            type: "fragment",
+            style: {
+              width: data.style.width,
+              height: data.style.height,
+            }
+          }
+
+          for (let i = 0; i < data.other.fragmentNum; i++) {
+            this.$store.commit("addView", {fatherId: frameData.id, data: fragmentData, name: "fragment"})
+          }
+        }
       } else {
         this.$store.commit("editView", {id: this.dataId, data, name: this.name})
       }
@@ -136,6 +165,9 @@ export default {
       switch (this.type) {
         case "group":
           data = this.$refs.groupConfig.getData();
+          break;
+        case "frame":
+          data = this.$refs.frameConfig.getData();
           break;
         case "focus":
           data = this.$refs.focusConfig.getData();
@@ -171,6 +203,9 @@ export default {
           case "group":
             this.$refs.groupConfig.setData(detail);
             break;
+          case "frame":
+            this.$refs.frameConfig.setData(detail);
+            break;
           case "focus":
             this.$refs.focusConfig.setData(detail);
             break;
@@ -195,7 +230,8 @@ export default {
     BaseConfig,
     ButtonConfig,
     GroupConfig,
-    FocusConfig
+    FocusConfig,
+    FrameConfig
   }
 }
 </script>

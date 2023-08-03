@@ -1,9 +1,10 @@
 <template>
   <div>
     <div class="group" ref="group" style="position: absolute;overflow: scroll;" :style="style" @dblclick.stop="editView"
-         @mousedown.stop="mousedown" @mousemove="mousemove" @mouseup="mouseup">
+         @mousedown.stop="mousedown" @mousemove="mousemove" @mouseup.stop="mouseup">
       <div v-for="(child,index) in data.children" :key="index">
         <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
+        <frame-view v-else-if="getDetailById(child.id).type=='frame'" :data="child"></frame-view>
         <focus-view v-else-if="getDetailById(child.id).type=='focus'" :data="child"></focus-view>
         <button-view v-else-if="getDetailById(child.id).type=='button'" :data="child"></button-view>
         <text-view v-else-if="getDetailById(child.id).type=='text'" :data="child"></text-view>
@@ -47,8 +48,9 @@
 import ButtonView from "@/components/button/ButtonView.vue";
 import TextView from "@/components/text/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
-import utils from "@/utils/viewUtils";
 import FocusView from "@/components/focus/FocusView.vue";
+import viewUtils from "@/utils/viewUtils";
+import FrameView from "@/components/frame/FrameView.vue";
 
 /**
  * 只用来布局
@@ -250,7 +252,8 @@ export default {
       }
 
       if (this.detail.type == "group") {
-        let downType = utils.judgeDownType(event, this);
+        let downType = viewUtils.judgeDownType(event, this);
+        console.log("downType",downType)
         if (!downType) {
           event.target.style.cursor = "auto";
           return;
@@ -273,9 +276,10 @@ export default {
     mouseup(event) {
       let preview = this.$movePreview.preview;
       if (!preview) {
+        this.$viewEffect.mouseup(event);
         return;
       }
-      event.stopPropagation();
+
       //把preview添加到这个group中
       this.$movePreview.preview = null;
 
@@ -294,7 +298,7 @@ export default {
     }
   },
 
-  components: {FocusView, TextView, ButtonView, BaseView}
+  components: {FrameView, FocusView, TextView, ButtonView, BaseView}
 }
 </script>
 <style scoped>
@@ -343,5 +347,9 @@ export default {
   padding: 0 2px;
   color: white;
   z-index: 1;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE/Edge */
+  user-select: none;
 }
 </style>

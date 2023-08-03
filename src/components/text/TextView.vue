@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text" :style="style" @dblclick="editView"
-         @mousedown="mousedown" @mousemove="mousemove">
+         @mousedown="mousedown" @mousemove="mousemove" @mouseup.stop="mouseup">
       {{ text }}
     </div>
     <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:style.left,top:style.top,background:selected?'gray':''}"></div>
@@ -135,7 +135,11 @@ export default {
 
         this.$viewEffect.mousemove(event);
       }
-    }
+    },
+
+    mouseup(event) {
+      this.$viewEffect.mouseup(event);
+    },
   },
 }
 </script>
@@ -164,5 +168,10 @@ export default {
   padding: 0 2px;
   color: white;
   z-index: 1;
+  pointer-events: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE/Edge */
+  user-select: none;
 }
 </style>

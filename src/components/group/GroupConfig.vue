@@ -20,7 +20,7 @@
     </el-form-item>
     <el-form-item label="背景颜色">
       <el-color-picker style="float: left;" v-model="data.style.background"></el-color-picker>
-      <div style="float: left;margin-left: 10px;">{{ data.style.background || "透明" }}</div>
+      <div style="float: left;margin-left: 10px;">{{ data.style.background || "无" }}</div>
     </el-form-item>
     <el-form-item label="初始焦点">
       <el-radio-group style="width: 100%;" v-model="data.props.firstFocus">
@@ -33,7 +33,7 @@
 <script>
 
 export default {
-  name: "ButtonConfig",
+  name: "GroupConfig",
   data() {
     return {
       data: {

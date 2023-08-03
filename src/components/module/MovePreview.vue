@@ -25,11 +25,12 @@ export default {
 
   watch: {
     preview() {
-      console.log("preview", this.preview);
+      // console.log("preview", this.preview);
     }
   },
 
   created() {
+    window.movePreview = this;
     Vue.prototype.$movePreview = this;
   },
 
@@ -54,7 +55,7 @@ export default {
       if (!this.preview) {
         return;
       }
-
+      // console.log(event.target,event.clientX,event.clientY)
       this.preview.style.left = event.clientX - this.preview.style.width / 2;
       this.preview.style.top = event.clientY - this.preview.style.height / 2;
 

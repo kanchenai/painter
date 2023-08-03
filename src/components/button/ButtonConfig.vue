@@ -63,7 +63,7 @@
     </el-form-item>
     <el-form-item v-show="showDetail&&focusType=='normal'">
       <el-color-picker style="float: left;" v-model="data.props['focus-color']"></el-color-picker>
-      <div style="float: left;margin-left: 10px;">{{ data.props['focus-color']||"透明" }}</div>
+      <div style="float: left;margin-left: 10px;">{{ data.props['focus-color']||"无" }}</div>
     </el-form-item>
     <el-form-item v-show="showDetail&&focusType!='normal'">
       <div style="width: 100%;">
