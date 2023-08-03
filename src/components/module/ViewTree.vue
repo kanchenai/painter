@@ -108,7 +108,7 @@ export default {
   },
 
   created() {
-    window.viewTree = this;
+    // window.viewTree = this;
     if (navigator.userAgent.toLowerCase().indexOf("win") > -1) {
       this.isWin = true;
     } else {
@@ -117,19 +117,6 @@ export default {
   },
 
   mounted() {
-    // this.$refs.tree.$el.addEventListener('copy', (event) => {
-    //   console.log('Text copied!');
-    //   // 在这里可以执行你的自定义逻辑
-    //   // this.copy();
-    // });
-    //
-    // // 监听粘贴事件
-    // this.$refs.tree.$el.addEventListener('paste', (event) => {
-    //   console.log('Text pasted!');
-    //   // 在这里可以执行你的自定义逻辑
-    //   // this.paste();
-    // });
-
     document.onkeydown = (event) => {
       if (event.target != this.$refs.tree.$el && !this.$refs.tree.$el.contains(event.target)) {
         return;

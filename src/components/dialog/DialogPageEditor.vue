@@ -47,7 +47,7 @@ export default {
       this.title = "新增页面";
       this.label = "";
 
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         this.$refs.labelInput.focus();
       })
     },
@@ -56,15 +56,26 @@ export default {
       this.visible = true;
       this.editType = "edit";
       this.dataId = id;
-
       this.title = "编辑页面";
+      let {aimFork} = this.$store.getters.getDataById(id);
+
+      this.label = aimFork.label;
+
+      this.$nextTick(() => {
+        this.$refs.labelInput.focus();
+      })
     },
 
     submit() {
       if (this.editType == "add") {
-        this.$store.commit("addPage", this.label)
+        this.$store.commit("addPage", this.label);
+        if (!this.$parent.currentPageId) {
+          if (this.$store.state.viewTreeData.length > 0) {
+            this.$parent.currentPageId = this.$store.state.viewTreeData[0].id;
+          }
+        }
       } else {
-        // this.$store.commit("editView", {id: this.dataId, data})
+        this.$store.commit("editPage", {id: this.dataId, label: this.label})
       }
 
       this.visible = false;
@@ -72,8 +83,7 @@ export default {
 
   },
 
-  components: {
-  }
+  components: {}
 }
 </script>
 <style scoped>

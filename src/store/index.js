@@ -36,6 +36,12 @@ let option = {
             state.painterDataId++;
         },
 
+        editPage(state, {id,label}) {
+            let {aimFork} = this.getters.getDataById(id);
+
+            aimFork.label = label;
+        },
+
         addView(state, {fatherId, data, name}) {
             let id = state.painterDataId + "";
             let {fatherFork, aimFork} = this.getters.getDataById(fatherId);
