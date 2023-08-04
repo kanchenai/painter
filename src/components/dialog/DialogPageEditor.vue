@@ -67,6 +67,13 @@ export default {
     },
 
     submit() {
+      let nameUsable = this.$store.getters.nameUsable(this.label,"page");
+
+      if(!nameUsable){
+        this.$message.error("Page名重复，请更换！")
+        return;
+      }
+
       if (this.editType == "add") {
         this.$store.commit("addPage", this.label);
         if (!this.$parent.currentPageId) {

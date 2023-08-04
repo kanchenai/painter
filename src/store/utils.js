@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import fragment from "@/components/frame/Fragment.vue";
 
 /**
  * size使用标签的控件名
@@ -42,20 +43,6 @@ let getForkById = function (fatherFork, fork, id) {
 }
 
 
-let getPageHtml = function (pageName, forkData, viewDetailObj) {
-    let {ele, imageList} = buildLayout(pageName, forkData, viewDetailObj);
-    let html =
-        "<template>" +
-        ele.innerHTML
-        + '</template>';
-    var regExp_0 = new RegExp("><", "gmi");
-    html = html.replace(regExp_0, ">\n<");
-
-    // var regExp_1 = new RegExp("<", "gmi");
-    // html = html.replace(regExp_1, "\n<");
-    return {html, imageList};
-}
-
 let buildLayout = function (pageName, forkData, viewDetailObj) {
     let id = forkData.id;
     let detail = viewDetailObj[id];
@@ -86,7 +73,7 @@ let buildLayout = function (pageName, forkData, viewDetailObj) {
                         if (imageName.indexOf(".") < 0) {
                             imageName += "." + value.type;
                         }
-                        let imgPath = "../images/" + pageName + "/" + imageName;
+                        let imgPath = "../images/" + pageName + "/" + imageName;//TODO Fragment的图片路径不对
                         ele.src = imgPath;
                         imageList.push(value);
                     }
@@ -102,6 +89,10 @@ let buildLayout = function (pageName, forkData, viewDetailObj) {
                 }
             }
         }
+    }
+
+    if (viewType == "frame") {
+        ele.setAttribute("view-id", forkData.label + "_frame");
     }
 
     if (detail.style) {
@@ -136,17 +127,36 @@ let buildLayout = function (pageName, forkData, viewDetailObj) {
         }
     }
 
+    let frameObj = {};
+
     if (forkData.children && forkData.children.length > 0) {
         for (let i = 0; i < forkData.children.length; i++) {
             let child = forkData.children[i];
-            let childObj = buildLayout(pageName, child, viewDetailObj);
-            ele.appendChild(childObj.ele);
+            let childObj = buildLayout(pageName, child, viewDetailObj, frameObj);
+            if (viewType != "frame") {
+                ele.appendChild(childObj.ele);
+                imageList = imageList.concat(childObj.imageList);
 
-            imageList = imageList.concat(childObj.imageList);
+                Object.keys(childObj.frameObj).forEach(key => {
+                    frameObj[key] = childObj.frameObj[key];
+                })
+            } else {
+                delete childObj.frameObj;
+                if (forkData.label) {
+                    if (!frameObj[forkData.label]) {
+                        frameObj[forkData.label] = [childObj]
+                    } else {
+                        frameObj[forkData.label].push(childObj);
+                    }
+                } else {
+                    console.error("frame未填写name");
+                }
+
+            }
         }
     }
-
-    return {ele, imageList};
+    console.log("frameObj", frameObj)
+    return {ele, imageList, frameObj};
 
 }
 
@@ -172,39 +182,143 @@ let writeFile = function (name, content, fileType) {
     URL.revokeObjectURL(objectURL)
 }
 
-let downloadPage = function (pageName, images, pageLayout) {
-    const zip = new JSZip();
+// let downloadPage = function (pageName, ele, imageList, frameObj) {
+//     console.log({pageName, ele, imageList, frameObj})
+//
+//     const zip = new JSZip();
+//
+//     const promises = imageList.map(image => {
+//         return fetch(image.url)
+//             .then(response => response.blob())
+//             .then(blob => {
+//                 let folderPath = "code/images/" + pageName + "/";
+//                 let fileName = getFileNameBy(image.url);
+//                 if (fileName.indexOf(".") < 0) {
+//                     fileName += "." + image.type;
+//                 }
+//                 let filePath = folderPath + fileName;
+//
+//                 zip.file(filePath, blob);
+//             });
+//     });
+//
+//     //写入page的html文件
+//     let pageLayout = eleToHtml(ele);
+//     const folderPath = "code/html/";
+//     const filePath = folderPath + pageName + ".html";
+//     zip.file(filePath, pageLayout);
+//
+//     promises.push(Promise.resolve());
+//
+//     Promise.all(promises)
+//         .then(() => {
+//             return zip.generateAsync({type: 'blob'});
+//         }).then(content => {
+//         const link = document.createElement('a');
+//         link.href = URL.createObjectURL(content);
+//         link.download = pageName + ".zip";
+//         link.click();
+//         URL.revokeObjectURL(link.href);
+//     });
+// }
 
-    const promises = images.map(image => {
+let downloadPage = async function (pageName, ele, imageList, frameObj) {
+    let zip = new JSZip();
+
+    let frameNameObj = [];
+    for (let frameName of Object.keys(frameObj)) {
+        let frame = frameObj[frameName];
+        frameNameObj[frameName + "_frame"] = [];
+        for (let i = 0; i < frame.length; i++) {
+            let fragmentObj = frame[i];
+            let fragmentName = frameName + "_fragment_" + i;
+            await putFrameToZip(pageName, fragmentName, fragmentObj.ele, fragmentObj.imageList, zip);
+
+            frameNameObj[frameName + "_frame"].push(toPascalCase(fragmentName))
+        }
+    }
+
+    await putPageToZip(pageName, ele, imageList, frameNameObj, zip);
+
+    let content = await zip.generateAsync({type: 'blob'})
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(content);
+    link.download = pageName + ".zip";
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
+let putPageToZip = async function (pageName, ele, imageList, frameNameObj, zip) {
+    console.log({pageName, ele, imageList})
+
+    let imageFolderPath = "code/images/" + pageName + "/";
+
+    const promises = imageList.map(image => {
         return fetch(image.url)
             .then(response => response.blob())
             .then(blob => {
-                let folderPath = "code/images/" + pageName + "/";
                 let fileName = getFileNameBy(image.url);
                 if (fileName.indexOf(".") < 0) {
                     fileName += "." + image.type;
                 }
-                let filePath = folderPath + fileName;
+                let filePath = imageFolderPath + fileName;
 
                 zip.file(filePath, blob);
             });
     });
 
-    const folderPath = "code/html/";
-    const filePath = folderPath + pageName + ".html";
-    zip.file(filePath, pageLayout);
-    promises.push(Promise.resolve());
+    //写入page的html文件
+    let pageLayout = eleToHtml(ele);
+    const htmlFolderPath = "code/html/";
+    const htmlPath = htmlFolderPath + pageName + ".html";
+    zip.file(htmlPath, pageLayout);
 
-    Promise.all(promises)
-        .then(() => {
-            return zip.generateAsync({type: 'blob'});
-        }).then(content => {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(content);
-        link.download = pageName + ".zip";
-        link.click();
-        URL.revokeObjectURL(link.href);
+    let pasecalPageName = toPascalCase(pageName)
+    let pageJs = buildPageJs(pageName, pasecalPageName, frameNameObj);
+    const jsFolderPath = "code/page/";
+    const jsPath = jsFolderPath + toPascalCase(pageName) + "Page" + ".js";
+    zip.file(jsPath, pageJs);
+
+    await Promise.all(promises).then();
+}
+
+let putFrameToZip = async function (pageName, fragmentName, ele, imageList, zip) {
+    console.log({fragmentName, ele, imageList})
+
+    let imageFolderPath = "code/images/" + pageName + "/" + fragmentName + "/";
+
+    const promises = imageList.map(image => {
+        return fetch(image.url)
+            .then(response => response.blob())
+            .then(blob => {
+                let fileName = getFileNameBy(image.url);
+                if (fileName.indexOf(".") < 0) {
+                    fileName += "." + image.type;
+                }
+                let filePath = imageFolderPath + fileName;
+
+                zip.file(filePath, blob);
+            });
     });
+
+    //TODO 处理ele中图片路径
+
+    //写入page的html文件
+    let pageLayout = eleToHtml(ele);
+    const htmlFolderPath = "code/html/fragment/" + pageName + "/";
+    const htmlPath = htmlFolderPath + fragmentName + ".html";
+    zip.file(htmlPath, pageLayout);
+
+    let pasecalFragmentName = toPascalCase(fragmentName)
+    let fragmentJs = buildFragmentJs(pageName, fragmentName, pasecalFragmentName);
+    const jsFolderPath = "code/fragment/" + pageName + "/";
+    const jsPath = jsFolderPath + pasecalFragmentName + ".js";
+    zip.file(jsPath, fragmentJs);
+
+    await Promise.all(promises).then();
+
+    return zip;
 }
 
 /**
@@ -217,9 +331,86 @@ let getFileNameBy = function (url) {
     return url.substring(index + 1);
 }
 
+let eleToHtml = function (ele) {
+    let html =
+        "<template>" +
+        ele.innerHTML
+        + '</template>';
+    var regExp_0 = new RegExp("><", "gmi");
+    html = html.replace(regExp_0, ">\n<");
+    // var regExp_1 = new RegExp("<", "gmi");
+    // html = html.replace(regExp_1, "\n<");
+    return html;
+}
+
+let buildPageJs = function (htmlName, jsName, frameNameObj) {
+    let jsCode = `
+import Page from "@core/frame/page/Page";\n`;
+
+    Object.keys(frameNameObj).forEach(frameName => {
+        frameNameObj[frameName].forEach(fragment => {
+            jsCode += `import ` + fragment + ` from "@fragment/home/` + fragment + `";\n`
+        })
+    })
+
+
+    jsCode += `
+export default class ` + jsName + ` extends Page {
+    onCreate(param) {
+        this.setStyle("background","black");
+        this.html = require("../html/` + htmlName + `.html");\n`
+
+    Object.keys(frameNameObj).forEach(frameName => {
+        jsCode += `
+        this.` + frameName + ` = this.findViewById("` + frameName + `");
+        this.` + frameName + `.addFragmentList([`;
+        frameNameObj[frameName].forEach(fragment => {
+            jsCode += `
+            new ` + fragment + `(this.viewManager),`;
+        })
+
+        jsCode += `\n])`;
+    })
+
+
+    jsCode += `
+    }
+}`;
+
+    return jsCode;
+}
+
+let buildFragmentJs = function (pageName, htmlName, jsName) {
+    return `
+import Fragment from "@core/frame/view/group/Fragment";
+
+export default class ` + jsName + ` extends Fragment{
+    onCreate() {
+        this.html = require("../../html/fragment/` + pageName + `/` + htmlName + `.html")
+    }
+
+}
+    `
+}
+
+let toPascalCase = function (word) {
+    // 将单词按照空格或其他分隔符分割成数组
+    const words = word.split(/[\s_-]+/);
+
+    // 将数组中的每个单词的首字母大写
+    const capitalizedWords = words.map(word => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    });
+
+    // 将数组中的单词合并成一个字符串
+    const pascalCaseWord = capitalizedWords.join('');
+
+    return pascalCaseWord;
+}
+
 export default {
     getDataById,
-    getPageHtml,
+    buildLayout,
     writeFile,
     downloadPage,
     getFileNameBy

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="fragment" ref="group" :style="style" @dblclick="editView" @mousedown.stop="mousedown"
-         @mousemove="mousemove" @mouseup.stop="mouseup">
+    <div class="fragment" ref="fragment" :style="style" @dblclick="editView" @mousedown.stop="mousedown"
+         @mousemove="mousemove" @mouseup="mouseup">
       <div v-for="(child,index) in data.children" :key="index">
         <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
         <frame-view v-else-if="getDetailById(child.id).type=='frame'" :data="child"></frame-view>
@@ -101,15 +101,15 @@ export default {
     },
     scrollHeight() {
       let value = this.height;
-      if (this.$refs.group) {
-        value = this.$refs.group.scrollHeight;
+      if (this.$refs.fragment) {
+        value = this.$refs.fragment.scrollHeight;
       }
       return value;
     },
     scrollWidth() {
       let value = this.width;
-      if (this.$refs.group) {
-        value = this.$refs.group.scrollWidth;
+      if (this.$refs.fragment) {
+        value = this.$refs.fragment.scrollWidth;
       }
       return value;
     },
@@ -209,18 +209,18 @@ export default {
   },
 
   mounted() {
-    this.$refs.group.addEventListener("scroll", event => {
+    this.$refs.fragment.addEventListener("scroll", event => {
       if (this.$refs.tag) {
-        this.$refs.tag.scrollLeft = this.$refs.group.scrollLeft;
-        this.$refs.tag.scrollTop = this.$refs.group.scrollTop;
+        this.$refs.tag.scrollLeft = this.$refs.fragment.scrollLeft;
+        this.$refs.tag.scrollTop = this.$refs.fragment.scrollTop;
       }
 
       if (this.$refs.vLineTag) {
-        this.$refs.vLineTag.scrollLeft = this.$refs.group.scrollLeft;
+        this.$refs.vLineTag.scrollLeft = this.$refs.fragment.scrollLeft;
       }
 
       if (this.$refs.hLineTag) {
-        this.$refs.hLineTag.scrollTop = this.$refs.group.scrollTop;
+        this.$refs.hLineTag.scrollTop = this.$refs.fragment.scrollTop;
       }
     })
   },
@@ -230,6 +230,11 @@ export default {
       this.$parent.editView();
     },
     mousedown(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        return;
+      }
+      event.stopPropagation();
       this.$parent.mousedown(event);
     },
     mousemove(event) {
@@ -241,7 +246,6 @@ export default {
     },
 
     mouseup(event) {
-      console.log("Fragment mouseup")
       let preview = this.$movePreview.preview;
       if (!preview) {
         this.$parent.mouseup(event);
@@ -252,7 +256,7 @@ export default {
       //把preview添加到这个group中
       this.$movePreview.preview = null;
 
-      let rect = this.$refs.group.getBoundingClientRect();
+      let rect = this.$refs.fragment.getBoundingClientRect();
       let left = rect.left;
       let top = rect.top;
 

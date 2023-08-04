@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="group" ref="group" style="position: absolute;overflow: scroll;" :style="style" @dblclick.stop="editView"
-         @mousedown.stop="mousedown" @mousemove="mousemove" @mouseup.stop="mouseup">
+         @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup">
       <div v-for="(child,index) in data.children" :key="index">
         <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
         <frame-view v-else-if="getDetailById(child.id).type=='frame'" :data="child"></frame-view>
@@ -238,6 +238,11 @@ export default {
     },
 
     mousedown(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        return;
+      }
+      event.stopPropagation();
       if (this.detail.type != "group") {
         this.$set(this.$store.state, "selectDataIdList", []);
       } else {
@@ -253,7 +258,7 @@ export default {
 
       if (this.detail.type == "group") {
         let downType = viewUtils.judgeDownType(event, this);
-        console.log("downType",downType)
+        // console.log("downType",downType)
         if (!downType) {
           event.target.style.cursor = "auto";
           return;
@@ -279,7 +284,7 @@ export default {
         this.$viewEffect.mouseup(event);
         return;
       }
-
+      event.stopPropagation();
       //把preview添加到这个group中
       this.$movePreview.preview = null;
 
@@ -306,7 +311,7 @@ export default {
   position: absolute;
   border: 1px dashed white;
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 0.6;
   z-index: 1;
 }
 

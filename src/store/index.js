@@ -36,7 +36,7 @@ let option = {
             state.painterDataId++;
         },
 
-        editPage(state, {id,label}) {
+        editPage(state, {id, label}) {
             let {aimFork} = this.getters.getDataById(id);
 
             aimFork.label = label;
@@ -201,9 +201,7 @@ let option = {
                 })
 
             }
-
-
-        }
+        },
     },
     getters: {
         // 在这里定义 getters 获取状态的方法
@@ -216,6 +214,35 @@ let option = {
         },
         isSelected: (state) => (id) => {
             return state.selectDataIdList.indexOf(id) >= 0;
+        },
+        nameUsable: (state,getters) => (name, type) => {
+            let flag = true;
+
+            if(!name){
+                flag = false;
+            }else if (type == "page") {
+                for (let pageData of state.viewTreeData) {
+                    if (pageData.label.toUpperCase() == name.toUpperCase()) {
+                        flag = false;
+                        break;
+                    }
+                }
+            } else if (type == "frame") {
+                for (let id of Object.keys(state.viewDetailObj)) {
+                    let detail = state.viewDetailObj[id];
+                    if (detail.type == "frame") {
+                        let {aimFork} = getters.getDataById(id);
+                        if (aimFork.label.toUpperCase() == name.toUpperCase()) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+            } else {
+
+            }
+
+            return flag;
         },
     },
     actions: {

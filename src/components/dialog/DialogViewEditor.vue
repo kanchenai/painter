@@ -133,6 +133,13 @@ export default {
     submit() {
       let data = this.getConfigData();
 
+      let nameUsable = this.$store.getters.nameUsable(this.name,this.type);
+
+      if(!nameUsable){
+        this.$message.error("请更换控件名，该控件名可能在生成代码时造成异常！"+"\n\""+this.name+"\"")
+        return;
+      }
+
       if (this.editType == "add") {
         this.$store.commit("addView", {fatherId: this.fatherDataId, data, name: this.name})
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text" :style="style" @dblclick="editView"
+    <div class="text" :style="style" @dblclick.stop="editView"
          @mousedown="mousedown" @mousemove="mousemove" @mouseup.stop="mouseup">
       {{ text }}
     </div>
@@ -114,6 +114,11 @@ export default {
       }
     },
     mousemove(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        return;
+      }
+
       if (utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
 
       } else {
@@ -138,6 +143,12 @@ export default {
     },
 
     mouseup(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        return;
+      }
+
+      event.stopPropagation();
       this.$viewEffect.mouseup(event);
     },
   },

@@ -1,13 +1,13 @@
 <template>
   <div v-show="visible">
     <div style="position: absolute;overflow: hidden;z-index: 1;" v-if="type!='img'" :style="style" @dblclick="editView"
-         @mousedown="mousedown" @mousemove="mousemove" @mouseup.stop="mouseup" >
+         @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" >
     </div>
     <div style="position: absolute;z-index: 1;" v-else :style="style" @dblclick="editView"
-         @mousedown="mousedown" @mousemove="mousemove" @mouseup.stop="mouseup" >
+         @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" >
       <img style="pointer-events: none;" :src="src" v-if="src" :style="{width:style.width,height:style.height}">
       <div v-else :style="defaultImgBg">
-        <img style="pointer-events: none;" src="../../assets/default-pic.png" :style="defaultImgStyle">
+        <img style="pointer-events: none;user-select: none;" src="../../assets/default-pic.png" :style="defaultImgStyle">
       </div>
     </div>
 
@@ -24,6 +24,7 @@
 <script>
 
 import utils from "@/utils/viewUtils";
+import viewUtils from "@/utils/viewUtils";
 
 /**
  * 只用来布局
@@ -147,7 +148,7 @@ export default {
       value.background = this.detail.style.background;
       value.borderRadius = this.detail.style.borderRadius + "px";
 
-      if (this.isFocus) {
+      if (viewUtils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
         value.pointerEvents = "none";
       }
 
@@ -250,6 +251,13 @@ export default {
     },
 
     mouseup(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        return;
+      }
+
+      event.stopPropagation();
+
       this.$viewEffect.mouseup(event);
     },
   },
@@ -271,6 +279,7 @@ export default {
   padding: 0 2px;
   color: white;
   z-index: 1;
+  pointer-events: none;
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE/Edge */

@@ -186,13 +186,11 @@ export default {
       this.$alert('布局生成一个' + aimFork.label + '页面', '提示', {
         confirmButtonText: '确定',
         callback: action => {
-          let viewDetailObj = this.$store.state.viewDetailObj;
-          let {html, imageList} = utils.getPageHtml(aimFork.label, aimFork, viewDetailObj);
-
-          console.log(action)
           if (action == "confirm") {
-            utils.writeFile(aimFork.label, html, "html");
-            utils.downloadPage(aimFork.label, imageList, html,)
+            let viewDetailObj = this.$store.state.viewDetailObj;
+            let {ele, imageList, frameObj} = utils.buildLayout(aimFork.label, aimFork, viewDetailObj);
+
+            utils.downloadPage(aimFork.label, ele, imageList, frameObj);
           }
         }
       });

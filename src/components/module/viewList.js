@@ -356,7 +356,7 @@ let viewList = [
         label: "内容长推荐位",
         type: "focus",
         style: {
-            width: 1124,
+            width: 1134,
             height: 134,
         },
         children: [
@@ -364,7 +364,7 @@ let viewList = [
                 label: "内容图片",
                 type: "img",
                 style: {
-                    width: 1124,
+                    width: 1134,
                     height: 134,
                     borderRadius: 7,
                 },
@@ -373,6 +373,6 @@ let viewList = [
     },
 ];
 
-// 440 + 12 + 216 + 12 + 216 + 12 + 216
+// 72 + 440 + 16 + 216 + 16 + 216 + 16 + 216 +72
 
 export default viewList;

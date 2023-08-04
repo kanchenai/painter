@@ -4,7 +4,7 @@
     <div class="default-focus" :style="{width:width+'px',height:height+'px',left:(left<3?0:left-3)+'px',top:(top<3?0:top-3)+'px'}"
          v-if="!focus" v-show="selected"></div>
     <div class="focus" :style="style" @dblclick.stop="editView"
-         @mousedown.stop="mousedown" @mousemove.stop="mousemove" @mouseup.stop="mouseup" >
+         @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" >
       <div v-for="(child,index) in data.children" :key="index">
         <text-view v-if="$store.getters.getDetailById(child.id).type=='text'" :data="child"></text-view>
         <base-view v-else :data="child"></base-view>
@@ -156,14 +156,22 @@ export default {
     },
 
     mousedown(event) {
+      event.stopPropagation();
+
       this.$viewEffect.mousedown(event, this);
       if (!this.selected) {
         this.$store.commit("selectView", {id: this.data.id});
       }
     },
     mousemove(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        return;
+      }
+
+      event.stopPropagation();
       let downType = utils.judgeDownType(event, this);
-      console.log("downType",downType)
+      // console.log("downType",downType)
       if (!downType) {
         event.target.style.cursor = "auto";
         return;
@@ -182,6 +190,7 @@ export default {
     },
 
     mouseup(event) {
+      event.stopPropagation();
       this.$viewEffect.mouseup(event);
     },
   },
