@@ -15,7 +15,7 @@
   </div>
 </template>
 <script>
-import utils from "@/utils/viewUtils";
+import viewUtils from "@/utils/viewUtils";
 
 export default {
   name: "TextView",
@@ -48,6 +48,11 @@ export default {
       value.top = this.top + 'px';
       value.fontSize = this.detail.style.fontSize + "px";
       value.lineHeight = this.height + 'px';
+
+      if (viewUtils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
+        value.pointerEvents = "none";
+      }
+
       return value;
     },
     width() {
@@ -97,7 +102,7 @@ export default {
 
   methods: {
     editView() {
-      if (utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
+      if (viewUtils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
 
       } else {
         this.$dialogViewEditor.editShow(this.data.id);
@@ -105,7 +110,7 @@ export default {
     },
 
     mousedown(event) {
-      if (utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
+      if (viewUtils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
 
       } else {
         event.stopPropagation();
@@ -119,7 +124,7 @@ export default {
         return;
       }
 
-      if (utils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
+      if (viewUtils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
 
       } else {
         event.stopPropagation();

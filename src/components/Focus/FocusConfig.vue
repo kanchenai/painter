@@ -53,12 +53,14 @@ export default {
     setData(data) {
       console.log(data)
       this.data.style = {...data.style}
+      this.data.props = {...data.props}
     },
 
     getData() {
       let data = {
         type: "focus",
         style: {...this.data.style},
+        props:{...this.data.props}
       };
       console.log(data)
       return data;
