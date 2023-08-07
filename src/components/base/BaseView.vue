@@ -1,9 +1,9 @@
 <template>
   <div v-show="visible">
-    <div style="position: absolute;overflow: hidden;z-index: 1;" v-if="type!='img'" :style="style" @dblclick="editView"
+    <div style="position: absolute;overflow: hidden;" v-if="type!='img'" :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" >
     </div>
-    <div style="position: absolute;z-index: 1;" v-else :style="style" @dblclick="editView"
+    <div style="position: absolute;" v-else :style="style" @dblclick="editView"
          @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" >
       <img style="pointer-events: none;" :src="src" v-if="src" :style="{width:style.width,height:style.height}">
       <div v-else :style="defaultImgBg">

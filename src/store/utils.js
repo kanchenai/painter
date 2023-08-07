@@ -73,7 +73,7 @@ let buildLayout = function (pageName, forkData, viewDetailObj) {
                         if (imageName.indexOf(".") < 0) {
                             imageName += "." + value.type;
                         }
-                        let imgPath = "../images/" + pageName + "/" + imageName;//TODO Fragment的图片路径不对
+                        let imgPath = imageName;//只设置图片名，路径在外设置
                         ele.src = imgPath;
                         imageList.push(value);
                     }
@@ -268,6 +268,13 @@ let putPageToZip = async function (pageName, ele, imageList, frameNameObj, zip) 
             });
     });
 
+    //处理ele中图片路径
+    let srcPath = "../images/" + pageName + "/";
+    let imgList = ele.querySelectorAll("img");
+    imgList.forEach(img=>{
+        img.src = srcPath + getFileNameBy(img.src);
+    })
+
     //写入page的html文件
     let pageLayout = eleToHtml(ele);
     const htmlFolderPath = "code/html/";
@@ -302,7 +309,12 @@ let putFrameToZip = async function (pageName, fragmentName, ele, imageList, zip)
             });
     });
 
-    //TODO 处理ele中图片路径
+    //处理ele中图片路径
+    let srcPath = "../../../images/" + pageName + "/" + fragmentName + "/";
+    let imgList = ele.querySelectorAll("img");
+    imgList.forEach(img=>{
+        img.src = srcPath + getFileNameBy(img.src);
+    })
 
     //写入page的html文件
     let pageLayout = eleToHtml(ele);
