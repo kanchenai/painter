@@ -1,4 +1,4 @@
-let viewList = [
+let defaultViewList = [
     {
         label: "楼层组",
         type: "group",
@@ -373,6 +373,4 @@ let viewList = [
     },
 ];
 
-// 72 + 440 + 16 + 216 + 16 + 216 + 16 + 216 +72
-
-export default viewList;
+export default defaultViewList;

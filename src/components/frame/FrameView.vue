@@ -1,7 +1,8 @@
 <template>
   <div>
-    <div ref="group" style="position: absolute;overflow: hidden;" :style="style">
-      <fragment :data="data.children[detail.other.selectedIndex]"></fragment>
+    <div ref="group" style="position: absolute;overflow: hidden;" :style="style" @dblclick.stop="editView"
+         @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup">
+      <fragment v-if="data.children.length>0" :data="data.children[detail.other.selectedIndex]"></fragment>
     </div>
     <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
 

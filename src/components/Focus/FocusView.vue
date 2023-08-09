@@ -97,7 +97,9 @@ export default {
         value.top = this.top + 'px';
       }
 
-      value.background = this.detail.style.background;
+      if(this.detail.style.borderRadius){
+        value.borderRadius = this.detail.style.borderRadius + "px";
+      }
 
       return value;
     },
@@ -191,7 +193,14 @@ export default {
 
     mouseup(event) {
       event.stopPropagation();
-      this.$viewEffect.mouseup(event);
+
+      let preview = this.$movePreview.preview;
+      if (!preview) {
+        this.$viewEffect.mouseup(event);
+        return;
+      }
+
+      this.$parent.mouseup(event);
     },
   },
 

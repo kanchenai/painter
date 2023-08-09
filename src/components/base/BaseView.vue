@@ -146,7 +146,9 @@ export default {
       value.top = top + "px";
 
       value.background = this.detail.style.background;
-      value.borderRadius = this.detail.style.borderRadius + "px";
+      if(this.detail.style.borderRadius){
+        value.borderRadius = this.detail.style.borderRadius + "px";
+      }
 
       if (viewUtils.insideConnot.indexOf(this.fatherDetail.type) >= 0) {
         value.pointerEvents = "none";

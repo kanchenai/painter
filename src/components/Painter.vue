@@ -3,7 +3,7 @@
     <el-container ref="mainFun" style="position:absolute;width:100%;">
       <el-container>
         <el-aside style="position:relative;padding: 0;height: 735px;overflow: hidden;"
-                  :width="openFolder?'250px':'25px'">
+                  :width="openFolder?'450px':'25px'">
           <div style="position:relative;height: 735px;width: 25px;float: left;background: #dcdfe6;">
             <el-button :icon="openFolder?'el-icon-folder-opened':'el-icon-folder'" type="text"
                        @click="openFolder=!openFolder" title="目录"></el-button>
@@ -11,7 +11,7 @@
                        @click="showDrawer"
                        title="控件"></el-button>
           </div>
-          <view-tree style="position:relative;width: 225px;height: 735px;float: left;" v-show="openFolder"
+          <view-tree style="position:relative;width: 425px;height: 735px;float: left;" v-show="openFolder"
                      @changePage="changePage"></view-tree>
         </el-aside>
         <el-main style="padding: 0">
@@ -33,6 +33,7 @@
 
     <dialog-view-editor ref="dialogViewEditor"></dialog-view-editor>
     <dialog-page-editor ref="dialogPageEditor"></dialog-page-editor>
+    <dialog-fragment-editor ref="dialogFragmentEditor"></dialog-fragment-editor>
   </div>
 </template>
 
@@ -46,6 +47,7 @@ import hljs from "highlight.js";
 import MovePreview from "@/components/module/MovePreview.vue";
 import DialogViewEditor from "@/components/dialog/DialogViewEditor.vue";
 import DialogPageEditor from "@/components/dialog/DialogPageEditor.vue";
+import DialogFragmentEditor from "@/components/dialog/DialogFragmentEditor.vue";
 
 export default {
   name: 'App',
@@ -142,6 +144,7 @@ export default {
   },
 
   components: {
+    DialogFragmentEditor,
     DialogPageEditor,
     DialogViewEditor,
     MovePreview,

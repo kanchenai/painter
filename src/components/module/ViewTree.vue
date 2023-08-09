@@ -14,7 +14,6 @@
           :data="treeData"
           node-key="id"
           :draggable="true"
-          default-expand-all
           :expand-on-click-node="false"
           :highlight-current="true"
           :accordion="false"
@@ -22,7 +21,7 @@
           @node-drag-end="nodeDragEnd"
           :allow-drop="allowDrop">
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span style="max-width: 50px;overflow:hidden;" v-if="getDetailById(data.id).type!='fragment'">{{
+        <span style="max-width: 150px;overflow:hidden;" v-if="getDetailById(data.id).type!='fragment'">{{
             node.label
           }}</span>
         <span style="max-width: 50px;overflow:hidden;" v-else :style="{color:fragmentLabelColor(node)}">{{
@@ -154,15 +153,7 @@ export default {
     addView(fatherId) {
       let fatherDetail = this.getDetailById(fatherId);
       if (fatherDetail.type == "frame") {
-        let fragmentData = {
-          type: "fragment",
-          style: {
-            width: fatherDetail.style.width,
-            height: fatherDetail.style.height,
-          }
-        }
-
-        this.$store.commit("addView", {fatherId, data: fragmentData, name: "fragment"})
+        this.$dialogFragmentEditor.addShow(fatherId);
       } else {
         this.$dialogViewEditor.addShow(fatherId);
       }
@@ -174,10 +165,24 @@ export default {
     },
 
     editView(id) {
-      this.$dialogViewEditor.editShow(id);
+      let detail = this.getDetailById(id);
+      if (detail.type == "fragment") {
+        this.$dialogFragmentEditor.editShow(id);
+      } else {
+        this.$dialogViewEditor.editShow(id);
+      }
     },
 
     removeView(id) {
+      let detail = this.getDetailById(id);
+
+      if (detail.type == "fragment") {
+        let {fatherFork} = this.$store.getters.getDataById(id);
+        let fatherDetail = this.$store.getters.getDetailById(fatherFork.id);
+        if (fatherFork.children.length - 1 == fatherDetail.other.selectedIndex) {
+          fatherDetail.other.selectedIndex = fatherFork.children.length - 2;
+        }
+      }
       this.$store.commit("deleteView", id)
     },
 
@@ -220,7 +225,7 @@ export default {
     },
 
     allowDrop(draggingNode, dropNode, type) {
-      console.log({draggingNode, dropNode, type})
+      // console.log({draggingNode, dropNode, type})
       let flag = true;
       if (!dropNode) {
         flag = false;
@@ -228,7 +233,7 @@ export default {
         let draggingDetail = this.$store.getters.getDetailById(draggingNode.data.id);
         let dropDetail = this.$store.getters.getDetailById(dropNode.data.id);
         if (type == "inner") {
-          if (draggingDetail.type == "page") {
+          if (draggingDetail.type == "page" || draggingDetail.type == "fragment") {
             flag = false;
           } else if (dropDetail.type == "focus") {
             if (draggingDetail.type == "div" || draggingDetail.type == "img" || draggingDetail.type == "text") {
@@ -358,7 +363,7 @@ export default {
 }
 
 .tree {
-  width: 225px;
+  width: 425px;
   height: 705px;
   overflow: scroll;
 }

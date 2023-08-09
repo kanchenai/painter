@@ -3,8 +3,8 @@
     <div class="fragment" ref="fragment" :style="style" @dblclick="editView" @mousedown.stop="mousedown"
          @mousemove="mousemove" @mouseup="mouseup">
       <div v-for="(child,index) in data.children" :key="index">
-        <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
-        <frame-view v-else-if="getDetailById(child.id).type=='frame'" :data="child"></frame-view>
+        <frame-view v-if="getDetailById(child.id).type=='frame'" :data="child"></frame-view>
+        <group-view v-else-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
         <focus-view v-else-if="getDetailById(child.id).type=='focus'" :data="child"></focus-view>
         <button-view v-else-if="getDetailById(child.id).type=='button'" :data="child"></button-view>
         <text-view v-else-if="getDetailById(child.id).type=='text'" :data="child"></text-view>
@@ -37,12 +37,12 @@
 </template>
 <script>
 
+import GroupView from "@/components/group/GroupView.vue";
 import ButtonView from "@/components/button/ButtonView.vue";
 import TextView from "@/components/text/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
 import FocusView from "@/components/focus/FocusView.vue";
 import FrameView from "@/components/frame/FrameView.vue";
-import GroupView from "@/components/group/GroupView.vue";
 
 /**
  * 只用来布局

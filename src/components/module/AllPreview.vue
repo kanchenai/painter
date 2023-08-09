@@ -19,11 +19,11 @@
 </template>
 <script>
 
-import viewList from "@/components/module/viewList";
 import TextPreview from "@/components/text/TextPreview.vue";
 import FocusPreview from "@/components/focus/FocusPreview.vue";
 import BasePreview from "@/components/base/BasePreview.vue";
 import GroupPreview from "@/components/group/GroupPreview.vue";
+import viewList from "@/components/module/viewList";
 
 export default {
   name: "AllPreview",

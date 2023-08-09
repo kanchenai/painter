@@ -3,13 +3,13 @@
     <div style="width: 1px;height: 100%;min-height: 735px;float: left;background: gray;"></div>
     <div style="position: relative;" v-if="data" @mouseup="mouseup" @mouseenter="mouseIn=true"
          @mouseleave="mouseleave">
-      <group-view :data="data"></group-view>
+      <page :data="data"></page>
     </div>
   </div>
 
 </template>
 <script>
-import GroupView from "@/components/group/GroupView.vue";
+import Page from "@/components/page/Page.vue";
 import Vue from "vue";
 import utils from "@/utils/viewUtils";
 
@@ -189,6 +189,17 @@ export default {
       detail.style.left = left;
       detail.style.top = top;
       this.$store.commit("editView", {id, data: detail, name: data.label})
+
+      if (detail.type == "frame") {
+        data.children.forEach(child => {
+          let childDetail = this.$store.getters.getDetailById(child.id);
+
+          childDetail.style.width = width;
+          childDetail.style.height = height;
+
+          this.$store.commit("editView", {id: child.id, data: childDetail, name: child.label})
+        })
+      }
     },
 
     mouseup(event) {
@@ -207,7 +218,7 @@ export default {
     }
   },
 
-  components: {GroupView},
+  components: {Page},
 }
 </script>
 <style scoped>

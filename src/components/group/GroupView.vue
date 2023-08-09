@@ -4,16 +4,13 @@
          @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup">
       <div v-for="(child,index) in data.children" :key="index">
         <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
-        <frame-view v-else-if="getDetailById(child.id).type=='frame'" :data="child"></frame-view>
         <focus-view v-else-if="getDetailById(child.id).type=='focus'" :data="child"></focus-view>
-        <button-view v-else-if="getDetailById(child.id).type=='button'" :data="child"></button-view>
         <text-view v-else-if="getDetailById(child.id).type=='text'" :data="child"></text-view>
         <base-view v-else :data="child"></base-view>
       </div>
     </div>
     <div class="bg"
-         :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"
-         v-if="detail.type=='group'"></div>
+         :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
 
     <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">
       {{ 'l:' + left + ',' + 't:' + top }}
@@ -22,7 +19,7 @@
       {{ 'w:' + width + ',' + 'h:' + height }}
     </div>
 
-    <div ref="tag" style="position: absolute;pointer-events: none;overflow: hidden;z-index: 1;" v-if="showReferLine"
+    <div ref="tag" style="position: absolute;pointer-events: none;overflow: hidden;z-index: 1;" v-show="showReferLine"
          :style="{width:style.width,height:style.height,left:style.left,top:style.top,}">
       <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index"
            :style="{left:left+'px',height:scrollHeight+'px'}"></div>
@@ -45,12 +42,10 @@
 </template>
 <script>
 
-import ButtonView from "@/components/button/ButtonView.vue";
 import TextView from "@/components/text/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
 import FocusView from "@/components/focus/FocusView.vue";
 import viewUtils from "@/utils/viewUtils";
-import FrameView from "@/components/frame/FrameView.vue";
 
 /**
  * 只用来布局
@@ -141,9 +136,7 @@ export default {
 
       value.background = this.detail.style.background;
 
-      if (this.detail.type == "group") {
-        value.zIndex = "1";
-      }
+      value.zIndex = "1";
 
       return value;
     },
@@ -207,7 +200,16 @@ export default {
     },
   },
 
-  watch: {},
+  watch: {
+    showReferLine(){
+      if(this.showReferLine){
+        if (this.$refs.tag) {
+          this.$refs.tag.scrollLeft = this.$refs.group.scrollLeft;
+          this.$refs.tag.scrollTop = this.$refs.group.scrollTop;
+        }
+      }
+    }
+  },
 
   created() {
   },
@@ -231,9 +233,6 @@ export default {
 
   methods: {
     editView() {
-      if (this.detail.type != "group") {
-        return;
-      }
       this.$dialogViewEditor.editShow(this.data.id);
     },
 
@@ -243,12 +242,8 @@ export default {
         return;
       }
       event.stopPropagation();
-      if (this.detail.type != "group") {
-        this.$set(this.$store.state, "selectDataIdList", []);
-      } else {
-        this.$viewEffect.mousedown(event, this);
-        this.$store.commit("selectView", {id: this.data.id});
-      }
+      this.$viewEffect.mousedown(event, this);
+      this.$store.commit("selectView", {id: this.data.id});
     },
     mousemove(event) {
       let preview = this.$movePreview.preview;
@@ -256,24 +251,22 @@ export default {
         return;
       }
 
-      if (this.detail.type == "group") {
-        let downType = viewUtils.judgeDownType(event, this);
-        // console.log("downType",downType)
-        if (!downType) {
-          event.target.style.cursor = "auto";
-          return;
-        }
-        if (downType == "move") {
-          event.target.style.cursor = "pointer";
-        } else {
-          if (downType.indexOf("left") >= 0 || downType.indexOf("right") >= 0) {
-            event.target.style.cursor = "ew-resize";
-          } else {
-            event.target.style.cursor = "ns-resize";
-          }
-        }
-        event.stopPropagation();
+      let downType = viewUtils.judgeDownType(event, this);
+      // console.log("downType",downType)
+      if (!downType) {
+        event.target.style.cursor = "auto";
+        return;
       }
+      if (downType == "move") {
+        event.target.style.cursor = "pointer";
+      } else {
+        if (downType.indexOf("left") >= 0 || downType.indexOf("right") >= 0) {
+          event.target.style.cursor = "ew-resize";
+        } else {
+          event.target.style.cursor = "ns-resize";
+        }
+      }
+      event.stopPropagation();
 
       this.$viewEffect.mousemove(event);
     },
@@ -303,7 +296,7 @@ export default {
     }
   },
 
-  components: {FrameView, FocusView, TextView, ButtonView, BaseView}
+  components: {FocusView, TextView, BaseView}
 }
 </script>
 <style scoped>

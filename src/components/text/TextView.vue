@@ -128,7 +128,7 @@ export default {
 
       } else {
         event.stopPropagation();
-        let downType = utils.judgeDownType(event, this);
+        let downType = viewUtils.judgeDownType(event, this);
         if (!downType) {
           event.target.style.cursor = "auto";
           return;

@@ -24,7 +24,7 @@ let option = {
                 children: []
             })
 
-            state.viewDetailObj[id] = {
+            let data = {
                 type: "page",
                 style: {
                     width: 1280,
@@ -32,6 +32,7 @@ let option = {
                     background: "black"
                 },
             }
+            Vue.set(state.viewDetailObj, id, data)
 
             state.painterDataId++;
         },
@@ -47,7 +48,7 @@ let option = {
             let {fatherFork, aimFork} = this.getters.getDataById(fatherId);
 
             if (!aimFork.children) {
-                aimFork.children = [];
+                Vue.set(aimFork, "children", [])
             }
 
             aimFork.children.push({
@@ -56,13 +57,9 @@ let option = {
                 children: []
             })
 
-            // Vue.set(state.viewDetailObj,id,data)
-
-            state.viewDetailObj[id] = data;
+            Vue.set(state.viewDetailObj, id, data)
 
             state.painterDataId++;
-
-            state.viewTreeData.__ob__.dep.notify();
         },
 
         dragFork(state, {draggingId, dropId, dropType}) {
@@ -98,7 +95,7 @@ let option = {
                     break;
                 case "inner":
                     if (!dropObj.aimFork.children) {
-                        dropObj.aimFork.children = [];
+                        Vue.set(dropObj.aimFork, "children", [])
                     }
                     dropObj.aimFork.children.push(draggingObj.aimFork);
                     break;
@@ -106,8 +103,6 @@ let option = {
                     dropChildren.splice(dropIndex + 1, 0, draggingObj.aimFork);
                     break;
             }
-
-            state.viewTreeData.__ob__.dep.notify();
         },
 
         editView(state, {id, data, name}) {
@@ -115,12 +110,11 @@ let option = {
 
             aimFork.label = name;
 
-            state.viewDetailObj[id] = data;
-            state.viewDetailObj.__ob__.dep.notify();
-            // console.log(state.viewDetailObj[id])
+            Vue.set(state.viewDetailObj, id, data)
         },
 
         deleteView(state, id) {
+            console.log("deleteView", id)
             let {fatherFork, aimFork} = this.getters.getDataById(id);
 
             let children = null;
@@ -134,13 +128,10 @@ let option = {
             children.splice(index, 1);
 
             delete state.viewDetailObj[id];
-
-            state.viewTreeData.__ob__.dep.notify();
         },
 
         selectView(state, {id}) {
-            state.selectDataIdList = [id];
-            state.selectDataIdList.__ob__.dep.notify();
+            Vue.set(state, "selectDataIdList", [id]);
         },
 
         copyView(state) {
@@ -214,35 +205,6 @@ let option = {
         },
         isSelected: (state) => (id) => {
             return state.selectDataIdList.indexOf(id) >= 0;
-        },
-        nameUsable: (state,getters) => (name, type) => {
-            let flag = true;
-
-            if(!name){
-                flag = false;
-            }else if (type == "page") {
-                for (let pageData of state.viewTreeData) {
-                    if (pageData.label.toUpperCase() == name.toUpperCase()) {
-                        flag = false;
-                        break;
-                    }
-                }
-            } else if (type == "frame") {
-                for (let id of Object.keys(state.viewDetailObj)) {
-                    let detail = state.viewDetailObj[id];
-                    if (detail.type == "frame") {
-                        let {aimFork} = getters.getDataById(id);
-                        if (aimFork.label.toUpperCase() == name.toUpperCase()) {
-                            flag = false;
-                            break;
-                        }
-                    }
-                }
-            } else {
-
-            }
-
-            return flag;
         },
     },
     actions: {

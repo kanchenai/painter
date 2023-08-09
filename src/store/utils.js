@@ -142,14 +142,15 @@ let buildLayout = function (pageName, forkData, viewDetailObj) {
                 })
             } else {
                 delete childObj.frameObj;
-                if (forkData.label) {
+                if (forkData.label || child.label) {
+                    childObj.label = child.label;
                     if (!frameObj[forkData.label]) {
                         frameObj[forkData.label] = [childObj]
                     } else {
                         frameObj[forkData.label].push(childObj);
                     }
                 } else {
-                    console.error("frame未填写name");
+                    console.error("frame或fragment未填写name");
                 }
 
             }
@@ -182,46 +183,6 @@ let writeFile = function (name, content, fileType) {
     URL.revokeObjectURL(objectURL)
 }
 
-// let downloadPage = function (pageName, ele, imageList, frameObj) {
-//     console.log({pageName, ele, imageList, frameObj})
-//
-//     const zip = new JSZip();
-//
-//     const promises = imageList.map(image => {
-//         return fetch(image.url)
-//             .then(response => response.blob())
-//             .then(blob => {
-//                 let folderPath = "code/images/" + pageName + "/";
-//                 let fileName = getFileNameBy(image.url);
-//                 if (fileName.indexOf(".") < 0) {
-//                     fileName += "." + image.type;
-//                 }
-//                 let filePath = folderPath + fileName;
-//
-//                 zip.file(filePath, blob);
-//             });
-//     });
-//
-//     //写入page的html文件
-//     let pageLayout = eleToHtml(ele);
-//     const folderPath = "code/html/";
-//     const filePath = folderPath + pageName + ".html";
-//     zip.file(filePath, pageLayout);
-//
-//     promises.push(Promise.resolve());
-//
-//     Promise.all(promises)
-//         .then(() => {
-//             return zip.generateAsync({type: 'blob'});
-//         }).then(content => {
-//         const link = document.createElement('a');
-//         link.href = URL.createObjectURL(content);
-//         link.download = pageName + ".zip";
-//         link.click();
-//         URL.revokeObjectURL(link.href);
-//     });
-// }
-
 let downloadPage = async function (pageName, ele, imageList, frameObj) {
     let zip = new JSZip();
 
@@ -231,7 +192,7 @@ let downloadPage = async function (pageName, ele, imageList, frameObj) {
         frameNameObj[frameName + "_frame"] = [];
         for (let i = 0; i < frame.length; i++) {
             let fragmentObj = frame[i];
-            let fragmentName = frameName + "_fragment_" + i;
+            let fragmentName = fragmentObj.label + "_fragment";
             await putFrameToZip(pageName, fragmentName, fragmentObj.ele, fragmentObj.imageList, zip);
 
             frameNameObj[frameName + "_frame"].push(toPascalCase(fragmentName))

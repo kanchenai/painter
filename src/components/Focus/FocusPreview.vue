@@ -91,6 +91,10 @@ export default {
         value.top = this.top + 'px';
       }
 
+      if(this.detail.style.borderRadius){
+        value.borderRadius = this.detail.style.borderRadius + "px";
+      }
+
       return value;
     },
 

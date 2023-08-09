@@ -67,10 +67,10 @@ export default {
     },
 
     submit() {
-      let nameUsable = this.$store.getters.nameUsable(this.label,"page");
+      let nameUsable = this.nameUsable();
 
       if(!nameUsable){
-        this.$message.error("Page名重复，请更换！")
+        this.$message.error("Page名重复！")
         return;
       }
 
@@ -88,6 +88,30 @@ export default {
       this.visible = false;
     },
 
+    nameUsable() {
+      let itemList = this.$store.state.viewTreeData.filter(item => {
+        let flag = false;
+
+        if (this.editType == "add") {
+          if (item.label.toUpperCase() == this.label.toUpperCase()) {
+            flag = true;
+          }
+        } else {
+          if (item.id != this.dataId && item.label.toUpperCase() == this.label.toUpperCase()) {
+            flag = true;
+          }
+        }
+
+        return flag;
+      })
+
+      let flag = true;
+      if (itemList.length > 0) {
+        flag = false;
+      }
+
+      return flag;
+    }
   },
 
   components: {}

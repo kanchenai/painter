@@ -133,33 +133,15 @@ export default {
     submit() {
       let data = this.getConfigData();
 
-      let nameUsable = this.$store.getters.nameUsable(this.name,this.type);
+      let nameUsable = this.nameUsable();
 
       if(!nameUsable){
-        this.$message.error("请更换控件名，该控件名可能在生成代码时造成异常！"+"\n\""+this.name+"\"")
+        this.$message.error("FrameView控件名重复！")
         return;
       }
 
       if (this.editType == "add") {
         this.$store.commit("addView", {fatherId: this.fatherDataId, data, name: this.name})
-
-        if (data.type == "frame") {
-          let {aimFork} = this.$store.getters.getDataById(this.fatherDataId);
-
-          let frameData = aimFork.children[aimFork.children.length - 1];
-
-          let fragmentData = {
-            type: "fragment",
-            style: {
-              width: data.style.width,
-              height: data.style.height,
-            }
-          }
-
-          for (let i = 0; i < data.other.fragmentNum; i++) {
-            this.$store.commit("addView", {fatherId: frameData.id, data: fragmentData, name: "fragment"})
-          }
-        }
       } else {
         this.$store.commit("editView", {id: this.dataId, data, name: this.name})
       }
@@ -229,6 +211,37 @@ export default {
         }
       })
 
+    },
+
+    nameUsable() {
+      if(this.type!="frame"){
+        return true;
+      }
+
+      let {aimFork} = this.$store.getters.getDataById(this.fatherDataId);
+
+      let itemList = aimFork.children.filter(item => {
+        let flag = false;
+
+        if (this.editType == "add") {
+          if (item.label.toUpperCase() == this.label.toUpperCase()) {
+            flag = true;
+          }
+        } else {
+          if (item.id != this.dataId && item.label.toUpperCase() == this.label.toUpperCase()) {
+            flag = true;
+          }
+        }
+
+        return flag;
+      })
+
+      let flag = true;
+      if (itemList.length > 0) {
+        flag = false;
+      }
+
+      return flag;
     }
   },
 

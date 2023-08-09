@@ -18,9 +18,6 @@
         <el-input v-model="data.style.height" type="number" placeholder="height"></el-input>
       </el-col>
     </el-form-item>
-    <el-form-item label="fragment数量">
-      <el-input v-model="data.other.fragmentNum" @change="fragmentNumChange" type="number"></el-input>
-    </el-form-item>
   </el-form>
 </template>
 <script>
@@ -37,7 +34,6 @@ export default {
           top: 120,
         },
         other: {
-          fragmentNum: 1,
           selectedIndex: 0
         }
       },
@@ -63,12 +59,6 @@ export default {
       console.log(data)
       return data;
     },
-
-    fragmentNumChange(value) {
-      if (value < 1) {
-        this.data.other.fragmentNum = 1;
-      }
-    }
   }
 }
 </script>
