@@ -224,11 +224,11 @@ export default {
         let flag = false;
 
         if (this.editType == "add") {
-          if (item.label.toUpperCase() == this.label.toUpperCase()) {
+          if (item.label.toUpperCase() == this.name.toUpperCase()) {
             flag = true;
           }
         } else {
-          if (item.id != this.dataId && item.label.toUpperCase() == this.label.toUpperCase()) {
+          if (item.id != this.dataId && item.label.toUpperCase() == this.name.toUpperCase()) {
             flag = true;
           }
         }

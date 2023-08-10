@@ -8,7 +8,21 @@
         <text-view v-else-if="getDetailById(child.id).type=='text'" :data="child"></text-view>
         <base-view v-else :data="child"></base-view>
       </div>
+
+      <div v-if="showReferLine">
+        <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index"
+             :style="{left:left+'px',height:referLineHeight+'px'}"></div>
+        <div class="h-line" v-for="(top,index) of referLine.hLineList" :key="'h'+index"
+             :style="{top:top+'px',width:referLineWidth+'px'}"></div>
+
+        <div class="h-short-line" v-for="(num,index) of Math.ceil(referLineHeight/10)" :key="'h-s'+index"
+             :style="{top:index*10+'px',width:((index%10==0)?15:((index%5==0)?10:(5)))+'px',left:shortLineLeft+'px'}"></div>
+
+        <div class="v-short-line" v-for="(num,index) of Math.ceil(referLineWidth/10)" :key="'v-s'+index"
+             :style="{left:index*10+'px',height:((index%10==0)?15:((index%5==0)?10:(5)))+'px',top:shortLineTop+'px'}"></div>
+      </div>
     </div>
+
     <div class="bg"
          :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
 
@@ -19,25 +33,6 @@
       {{ 'w:' + width + ',' + 'h:' + height }}
     </div>
 
-    <div ref="tag" style="position: absolute;pointer-events: none;overflow: hidden;z-index: 1;" v-show="showReferLine"
-         :style="{width:style.width,height:style.height,left:style.left,top:style.top,}">
-      <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index"
-           :style="{left:left+'px',height:scrollHeight+'px'}"></div>
-      <div class="h-line" v-for="(top,index) of referLine.hLineList" :key="'h'+index"
-           :style="{top:top+'px',width:scrollWidth+'px'}"></div>
-    </div>
-
-    <div ref="vLineTag" style="position: absolute;pointer-events: none;overflow: hidden;z-index: 1;" v-if="showReferLine"
-         :style="{width:style.width,height:style.height,left:style.left,top:style.top,}">
-      <div class="v-short-line" v-for="(num,index) of Math.ceil(scrollWidth/10)" :key="'v-s'+index"
-           :style="{left:index*10+'px',height:((index%10==0)?15:((index%5==0)?10:(5)))+'px'}"></div>
-    </div>
-
-    <div ref="hLineTag" style="position: absolute;pointer-events: none;overflow: hidden;z-index: 1;" v-if="showReferLine"
-         :style="{width:style.width,height:style.height,left:style.left,top:style.top,}">
-      <div class="h-short-line" v-for="(num,index) of Math.ceil(scrollHeight/10)" :key="'h-s'+index"
-           :style="{top:index*10+'px',width:((index%10==0)?15:((index%5==0)?10:(5)))+'px'}"></div>
-    </div>
   </div>
 </template>
 <script>
@@ -58,7 +53,13 @@ export default {
 
   data() {
     return {
-      showReferLine: false
+      showReferLine: false,
+
+      referLineHeight: 0,
+      referLineWidth: 0,
+
+      shortLineLeft: 0,
+      shortLineTop: 0,
     }
   },
 
@@ -100,20 +101,6 @@ export default {
         value = this.detail.style.height;
       }
 
-      return value;
-    },
-    scrollHeight() {
-      let value = this.height;
-      if (this.$refs.group) {
-        value = this.$refs.group.scrollHeight;
-      }
-      return value;
-    },
-    scrollWidth() {
-      let value = this.width;
-      if (this.$refs.group) {
-        value = this.$refs.group.scrollWidth;
-      }
       return value;
     },
     style() {
@@ -200,34 +187,15 @@ export default {
     },
   },
 
-  watch: {
-    showReferLine(){
-      if(this.showReferLine){
-        if (this.$refs.tag) {
-          this.$refs.tag.scrollLeft = this.$refs.group.scrollLeft;
-          this.$refs.tag.scrollTop = this.$refs.group.scrollTop;
-        }
-      }
-    }
-  },
-
-  created() {
-  },
-
   mounted() {
+    this.referLineWidth = this.width;
+    this.referLineHeight = this.height;
     this.$refs.group.addEventListener("scroll", event => {
-      if (this.$refs.tag) {
-        this.$refs.tag.scrollLeft = this.$refs.group.scrollLeft;
-        this.$refs.tag.scrollTop = this.$refs.group.scrollTop;
-      }
+      this.referLineHeight = this.$refs.group.scrollHeight;
+      this.referLineWidth = this.$refs.group.scrollWidth;
 
-      if (this.$refs.vLineTag) {
-        this.$refs.vLineTag.scrollLeft = this.$refs.group.scrollLeft;
-      }
-
-      if (this.$refs.hLineTag) {
-        this.$refs.hLineTag.scrollTop = this.$refs.group.scrollTop;
-      }
+      this.shortLineLeft = this.$refs.group.scrollLeft;
+      this.shortLineTop = this.$refs.group.scrollTop;
     })
   },
 
@@ -287,6 +255,9 @@ export default {
 
       preview.style.left -= left;
       preview.style.top -= top;
+
+      preview.style.left += this.$refs.group.scrollLeft;
+      preview.style.top += this.$refs.group.scrollTop;
 
       this.$store.commit("addPreview", {fatherId: this.data.id, preview})
     },
