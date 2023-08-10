@@ -181,6 +181,9 @@ export default {
         let fatherDetail = this.$store.getters.getDetailById(fatherFork.id);
         if (fatherFork.children.length - 1 == fatherDetail.other.selectedIndex) {
           fatherDetail.other.selectedIndex = fatherFork.children.length - 2;
+          if (fatherDetail.other.selectedIndex < 0) {
+            fatherDetail.other.selectedIndex = 0;
+          }
         }
       }
       this.$store.commit("deleteView", id)
@@ -225,38 +228,51 @@ export default {
     },
 
     allowDrop(draggingNode, dropNode, type) {
-      // console.log({draggingNode, dropNode, type})
       let flag = true;
       if (!dropNode) {
         flag = false;
       } else {
         let draggingDetail = this.$store.getters.getDetailById(draggingNode.data.id);
         let dropDetail = this.$store.getters.getDetailById(dropNode.data.id);
-        if (type == "inner") {
-          if (draggingDetail.type == "page" || draggingDetail.type == "fragment") {
+
+        flag = this.allowOperate(draggingDetail, dropDetail, type);
+      }
+
+      return flag;
+    },
+
+    allowOperate(draggingDetail, dropDetail, type) {
+      // console.log({draggingNode, dropNode, type})
+      let flag = true;
+
+      if (type == "inner") {
+        if (draggingDetail.type == "page") {
+          flag = false;
+        } else if (dropDetail.type == "focus") {
+          if (draggingDetail.type == "div" || draggingDetail.type == "img" || draggingDetail.type == "text") {
+            flag = true;
+          } else {
             flag = false;
-          } else if (dropDetail.type == "focus") {
-            if (draggingDetail.type == "div" || draggingDetail.type == "img" || draggingDetail.type == "text") {
-              flag = true;
-            } else {
-              flag = false;
-            }
+          }
+        } else {
+          if (dropDetail.type == "frame" && draggingDetail.type != "fragment") {
+            flag = false;
           } else {
             if (dropDetail.type == "div" || dropDetail.type == "img" || dropDetail.type == "text") {
               flag = false;
             }
           }
-        } else if (type == "none") {
-          flag = false;
+        }
+      } else if (type == "none") {
+        flag = false;
+      } else {
+        if (draggingDetail.type == "page") {
+          if (dropDetail.type == "page") {
+            flag = true;
+          }
         } else {
-          if (draggingDetail.type == "page") {
-            if (dropDetail.type == "page") {
-              flag = true;
-            }
-          } else {
-            if (dropDetail.type != "page") {
-              flag = true;
-            }
+          if (dropDetail.type != "page") {
+            flag = true;
           }
         }
       }
@@ -309,8 +325,13 @@ export default {
       let itemList_1 = this.$store.state.selectDataIdList.filter(id => {
         let flag = false;
         let detail = this.$store.getters.getDetailById(id);
-        if (detail.type == "div" || detail.type == "img" || detail.type == "text") {
-          flag = true;
+
+        for(let operateId of this.$store.state.copyDataIdList){
+          let operateDetail = this.$store.getters.getDetailById(operateId);
+          if(!this.allowOperate(operateDetail,detail,"inner")){
+            flag = true;
+            break;
+          }
         }
 
         return flag;

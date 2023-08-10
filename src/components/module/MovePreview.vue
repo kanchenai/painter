@@ -13,6 +13,7 @@ import Vue from "vue";
 import TextPreview from "@/components/text/TextPreview.vue";
 import BasePreview from "@/components/base/BasePreview.vue";
 import GroupPreview from "@/components/group/GroupPreview.vue";
+import viewUtils from "@/utils/viewUtils";
 
 export default {
   name: "MovePreview",
@@ -51,13 +52,26 @@ export default {
     mouseup(event) {
       this.preview = null;
     },
-    mousemove(event) {
+    mousemove(event, referLine, fatherLeft, fatherTop) {
       if (!this.preview) {
         return;
       }
-      // console.log(event.target,event.clientX,event.clientY)
-      this.preview.style.left = event.clientX - this.preview.style.width / 2;
-      this.preview.style.top = event.clientY - this.preview.style.height / 2;
+
+      let width = this.preview.style.width;
+      let height = this.preview.style.height;
+      let left = event.clientX - width / 2;
+      let top = event.clientY - height / 2;
+
+
+      if (referLine) {
+        let obj = viewUtils.correctMoveView(left - fatherLeft, top - fatherTop, width, height, referLine);
+        console.log(obj)
+        left = obj.left + fatherLeft;
+        top = obj.top + fatherTop;
+      }
+      this.preview.style.left = left;
+      this.preview.style.top = top;
+
 
       this.preview.__ob__.dep.notify();
     },

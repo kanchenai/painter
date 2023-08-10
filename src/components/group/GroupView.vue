@@ -1,25 +1,30 @@
 <template>
   <div>
     <div class="group" ref="group" style="position: absolute;overflow: scroll;" :style="style" @dblclick.stop="editView"
-         @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup">
+         @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" @mouseout="mouseout">
       <div v-for="(child,index) in data.children" :key="index">
         <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
         <focus-view v-else-if="getDetailById(child.id).type=='focus'" :data="child"></focus-view>
         <text-view v-else-if="getDetailById(child.id).type=='text'" :data="child"></text-view>
         <base-view v-else :data="child"></base-view>
       </div>
+    </div>
 
-      <div v-if="showReferLine">
-        <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index"
-             :style="{left:left+'px',height:referLineHeight+'px'}"></div>
-        <div class="h-line" v-for="(top,index) of referLine.hLineList" :key="'h'+index"
-             :style="{top:top+'px',width:referLineWidth+'px'}"></div>
+    <div ref="tag" :style="tagStyle">
+      <div style="position: absolute;width: 4000px;height: 3000px;">
+        <div v-if="showReferLine">
+          <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index"
+               :style="{left:left+'px'}"></div>
+          <div class="h-line" v-for="(top,index) of referLine.hLineList" :key="'h'+index"
+               :style="{top:top+'px'}"></div>
 
-        <div class="h-short-line" v-for="(num,index) of Math.ceil(referLineHeight/10)" :key="'h-s'+index"
-             :style="{top:index*10+'px',width:((index%10==0)?15:((index%5==0)?10:(5)))+'px',left:shortLineLeft+'px'}"></div>
+          <div class="h-short-line" v-for="(num,index) of 300" :key="'h-s'+index"
+               :style="{top:index*10+'px',width:((index%10==0)?15:((index%5==0)?10:(5)))+'px',left:shortLineLeft+'px'}"></div>
 
-        <div class="v-short-line" v-for="(num,index) of Math.ceil(referLineWidth/10)" :key="'v-s'+index"
-             :style="{left:index*10+'px',height:((index%10==0)?15:((index%5==0)?10:(5)))+'px',top:shortLineTop+'px'}"></div>
+          <div class="v-short-line" v-for="(num,index) of 400" :key="'v-s'+index"
+               :style="{left:index*10+'px',height:((index%10==0)?15:((index%5==0)?10:(5)))+'px',top:shortLineTop+'px'}"></div>
+        </div>
+
       </div>
     </div>
 
@@ -54,9 +59,6 @@ export default {
   data() {
     return {
       showReferLine: false,
-
-      referLineHeight: 0,
-      referLineWidth: 0,
 
       shortLineLeft: 0,
       shortLineTop: 0,
@@ -128,12 +130,23 @@ export default {
       return value;
     },
 
+    tagStyle() {
+      let value = {...this.style};
+
+      delete value.background;
+      value.pointerEvents = "none";
+      value.overflow = "hidden";
+      value.position = "absolute";
+
+      return value;
+    },
+
     referLine() {
       let value = {vLineList: [], hLineList: []};
 
       if (this.data.children && this.data.children.length > 0) {
         this.data.children.forEach(child => {
-          if (this.$store.state.selectDataIdList.indexOf(child.id) >= 0) {
+          if (!this.$movePreview.preview && this.$store.state.selectDataIdList.indexOf(child.id) >= 0) {
             return;
           }
           let childDetail = this.$store.getters.getDetailById(child.id)
@@ -188,11 +201,11 @@ export default {
   },
 
   mounted() {
-    this.referLineWidth = this.width;
-    this.referLineHeight = this.height;
     this.$refs.group.addEventListener("scroll", event => {
-      this.referLineHeight = this.$refs.group.scrollHeight;
-      this.referLineWidth = this.$refs.group.scrollWidth;
+      if (this.$refs.tag) {
+        this.$refs.tag.scrollLeft = this.$refs.group.scrollLeft;
+        this.$refs.tag.scrollTop = this.$refs.group.scrollTop;
+      }
 
       this.shortLineLeft = this.$refs.group.scrollLeft;
       this.shortLineTop = this.$refs.group.scrollTop;
@@ -214,8 +227,16 @@ export default {
       this.$store.commit("selectView", {id: this.data.id});
     },
     mousemove(event) {
+      event.stopPropagation();
+
       let preview = this.$movePreview.preview;
       if (preview) {
+        this.showReferLine = true;
+
+        let rect = this.$refs.group.getBoundingClientRect();
+        let left = rect.left;
+        let top = rect.top;
+        this.$movePreview.mousemove(event, this.referLine, left, top);
         return;
       }
 
@@ -234,7 +255,6 @@ export default {
           event.target.style.cursor = "ns-resize";
         }
       }
-      event.stopPropagation();
 
       this.$viewEffect.mousemove(event);
     },
@@ -245,6 +265,8 @@ export default {
         this.$viewEffect.mouseup(event);
         return;
       }
+
+      this.showReferLine = false;
       event.stopPropagation();
       //把preview添加到这个group中
       this.$movePreview.preview = null;
@@ -260,6 +282,14 @@ export default {
       preview.style.top += this.$refs.group.scrollTop;
 
       this.$store.commit("addPreview", {fatherId: this.data.id, preview})
+    },
+
+    mouseout(event) {
+      let preview = this.$movePreview.preview;
+      if (preview) {
+        this.showReferLine = false;
+        return;
+      }
     },
 
     getDetailById(id) {
@@ -287,11 +317,13 @@ export default {
 .v-line {
   position: absolute;
   width: 1px;
+  height: 100%;
   border-left: 1px dashed #de2910;
 }
 
 .h-line {
   position: absolute;
+  width: 100%;
   height: 1px;
   border-top: 1px dashed #de2910;
 }

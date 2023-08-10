@@ -71,10 +71,59 @@ let correctPreviewBy = function (width, height) {
     return {rate, left, top};
 }
 
+/**
+ * 在移动时，根据参考线校准
+ * @param left
+ * @param top
+ * @param width
+ * @param height
+ * @param referLine
+ * @returns {{top, left}}
+ */
+let correctMoveView = function (left, top, width, height, referLine) {
+    if (left < 0) {
+        left = 0;
+    }
+
+    if (top < 0) {
+        top = 0;
+    }
+
+    let disPx = 6;
+    let vReferLineList = referLine.vLineList;
+    for (let vReferLine of vReferLineList) {
+        if (Math.abs(left - vReferLine) < disPx) {
+            left = vReferLine;
+            break;
+        }
+
+        if (Math.abs(left + width - vReferLine) < disPx) {
+            left = vReferLine - width;
+            break;
+        }
+    }
+
+    let hReferLineList = referLine.hLineList;
+    for (let hReferLine of hReferLineList) {
+        if (Math.abs(top - hReferLine) < disPx) {
+            top = hReferLine;
+            break;
+        }
+
+        if (Math.abs(top + height - hReferLine) < disPx) {
+            top = hReferLine - height;
+            break;
+        }
+    }
+
+    return {left, top}
+}
+
 export default {
     boardWidth,
     insideConnot,
     judgeDownType,
     getImageSize,
-    correctPreviewBy
+    correctPreviewBy,
+    correctMoveView
 }

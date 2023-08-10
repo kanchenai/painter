@@ -11,7 +11,7 @@
 <script>
 import Page from "@/components/page/Page.vue";
 import Vue from "vue";
-import utils from "@/utils/viewUtils";
+import viewUtils from "@/utils/viewUtils";
 
 export default {
   name: "ViewEffect",
@@ -95,7 +95,7 @@ export default {
       this.operateComponent = component;
       this.operateComponent.$parent.showReferLine = true;
       this.oldStyle = {...component.style};
-      this.downType = utils.judgeDownType(event, component);
+      this.downType = viewUtils.judgeDownType(event, component);
     },
 
     mousemove(event) {
@@ -117,66 +117,36 @@ export default {
         left = left + dx;
         top = top + dy;
 
-        if (left < 0) {
-          left = 0;
-        }
+        let obj = viewUtils.correctMoveView(left, top, width, height, this.operateComponent.$parent.referLine);
 
-        if (top < 0) {
-          top = 0;
-        }
-
-        let disPx = 6;
-        let vReferLineList = this.operateComponent.$parent.referLine.vLineList;
-        for (let vReferLine of vReferLineList) {
-          if (Math.abs(left - vReferLine) < disPx) {
-            left = vReferLine;
-            break;
-          }
-
-          if (Math.abs(left + width - vReferLine) < disPx) {
-            left = vReferLine - width;
-            break;
-          }
-        }
-
-        let hReferLineList = this.operateComponent.$parent.referLine.hLineList;
-        for (let hReferLine of hReferLineList) {
-          if (Math.abs(top - hReferLine) < disPx) {
-            top = hReferLine;
-            break;
-          }
-
-          if (Math.abs(top + height - hReferLine) < disPx) {
-            top = hReferLine - height;
-            break;
-          }
-        }
+        left = obj.left;
+        top = obj.top;
       } else {
         if (this.downType.indexOf("left") >= 0) {
           if (left + dx < 0) {
             dx = -left;
-          } else if (dx > width - utils.boardWidth * 2) {
-            dx = width - utils.boardWidth * 2
+          } else if (dx > width - viewUtils.boardWidth * 2) {
+            dx = width - viewUtils.boardWidth * 2
           }
           left += dx;
           width -= dx;
         } else if (this.downType.indexOf("right") >= 0) {
           width += dx;
-          if (width < utils.boardWidth * 2) {
-            width = utils.boardWidth * 2
+          if (width < viewUtils.boardWidth * 2) {
+            width = viewUtils.boardWidth * 2
           }
         } else if (this.downType.indexOf("top") >= 0) {
           if (top + dy < 0) {
             dy = -top;
-          } else if (dy > height - utils.boardWidth * 2) {
-            dy = height - utils.boardWidth * 2
+          } else if (dy > height - viewUtils.boardWidth * 2) {
+            dy = height - viewUtils.boardWidth * 2
           }
           top += dy;
           height -= dy;
         } else {
           height += dy;
-          if (height < utils.boardWidth * 2) {
-            height = utils.boardWidth * 2
+          if (height < viewUtils.boardWidth * 2) {
+            height = viewUtils.boardWidth * 2
           }
         }
       }
