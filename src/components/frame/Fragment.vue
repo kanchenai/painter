@@ -13,14 +13,14 @@
     </div>
 
     <div ref="tag" :style="tagStyle">
-      <div style="position: absolute;width: 4000px;height: 3000px;">
+      <div style="position: absolute;width: 4000px;height: 10000px;">
         <div v-if="showReferLine">
           <div class="v-line" v-for="(left,index) of referLine.vLineList" :key="'v'+index"
                :style="{left:left+'px'}"></div>
           <div class="h-line" v-for="(top,index) of referLine.hLineList" :key="'h'+index"
                :style="{top:top+'px'}"></div>
 
-          <div class="h-short-line" v-for="(num,index) of 300" :key="'h-s'+index"
+          <div class="h-short-line" v-for="(num,index) of 1000" :key="'h-s'+index"
                :style="{top:index*10+'px',width:((index%10==0)?15:((index%5==0)?10:(5)))+'px',left:shortLineLeft+'px'}"></div>
 
           <div class="v-short-line" v-for="(num,index) of 400" :key="'v-s'+index"

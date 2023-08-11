@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="width: 1px;height: 100%;min-height: 735px;float: left;background: gray;"></div>
+    <div style="width: 1px;height: 100%;min-height: 720px;float: left;background: gray;"></div>
     <div style="position: relative;" v-if="data" @mouseup="mouseup" @mouseenter="mouseIn=true"
          @mouseleave="mouseleave">
       <page :data="data"></page>

@@ -130,7 +130,7 @@ let defaultViewList = [
                 }
             },
             {
-                label: "内容名",
+                label: "说明",
                 type: "text",
                 style: {
                     width: 181,
@@ -145,6 +145,86 @@ let defaultViewList = [
                 },
                 props: {
                     value: "这是一段示例说明"
+                }
+            }
+        ]
+    },
+    {
+        label: "预约海报位",
+        type: "focus",
+        style: {
+            width: 205,
+            height: 348,
+            borderRadius: 7,
+        },
+        children: [
+            {
+                label: "内容图片",
+                type: "img",
+                style: {
+                    width: 205,
+                    height: 258,
+                },
+            },
+            {
+                label: "文字背景",
+                type: "div",
+                style: {
+                    width: 205,
+                    height: 90,
+                    top: 258,
+                    background: "#1f2023",
+                }
+            },
+            {
+                label: "内容名",
+                type: "text",
+                style: {
+                    width: 181,
+                    height: 16,
+                    top: 270,
+                    left: 12,
+                    color: "#ffffff",
+                    fontSize: 16,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textAlign: "left",
+                },
+                props: {
+                    value: "这是一段示例内容名"
+                }
+            },
+            {
+                label: "预约背景",
+                type: "div",
+                style: {
+                    width: 180,
+                    height: 38,
+                    top: 295,
+                    left: 12,
+                    background: "#1e2927",
+                    borderRadius: 5,
+                },
+                props: {
+                    value: "预约"
+                }
+            },
+            {
+                label: "预约",
+                type: "text",
+                style: {
+                    width: 181,
+                    height: 38,
+                    top: 295,
+                    left: 12,
+                    color: "#019f5e",
+                    fontSize: 16,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textAlign: "center",
+                },
+                props: {
+                    value: "预约"
                 }
             }
         ]
@@ -195,7 +275,7 @@ let defaultViewList = [
                 }
             },
             {
-                label: "内容名",
+                label: "说明",
                 type: "text",
                 style: {
                     width: 207,
@@ -261,5 +341,6 @@ let defaultViewList = [
     },
 ];
 //44 184 324 464 604 744 884 1024 1164
-// 44  270 500 726 952 1183
+//44 270 500 726 952 1183
+//44 322 600 876 1155
 export default defaultViewList;

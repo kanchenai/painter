@@ -156,7 +156,6 @@ let buildLayout = function (pageName, forkData, viewDetailObj) {
             }
         }
     }
-    console.log("frameObj", frameObj)
     return {ele, imageList, frameObj};
 
 }

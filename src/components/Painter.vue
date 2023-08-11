@@ -64,9 +64,10 @@ export default {
   computed: {
     footerStyle() {
       let value = {};
-
-      value.height = window.innerHeight - 735 + "px";
-      // value.minHeight = "120px";
+      // value.position = "absloute"
+      value.height = window.innerHeight - 736 + "px";
+      value.top = "736px";
+      // value.overflowX = "hidden";
 
       return value;
     },

@@ -14,9 +14,10 @@
           :data="treeData"
           node-key="id"
           :draggable="true"
-          :expand-on-click-node="false"
+          :expand-on-click-node="true"
           :highlight-current="true"
-          :accordion="false"
+          :accordion="true"
+          :render-after-expand="false"
           @current-change="currentChange"
           @node-drag-end="nodeDragEnd"
           :allow-drop="allowDrop">
@@ -81,9 +82,6 @@ export default {
   },
 
   computed: {
-    painterData() {
-      return this.$store.state.painterData;
-    },
     treeData() {
       return this.$store.state.viewTreeData;
     },
@@ -333,6 +331,8 @@ export default {
             break;
           }
         }
+
+
 
         return flag;
       })

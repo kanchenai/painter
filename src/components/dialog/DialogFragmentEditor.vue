@@ -55,7 +55,7 @@ export default {
       this.visible = true;
       this.editType = "add";
       this.fatherDataId = fatherId;
-      this.title = "新增";
+      this.title = "新增Fragment";
       this.label = "";
 
       this.$nextTick(() => {
@@ -69,7 +69,7 @@ export default {
       this.dataId = id;
       let {fatherFork, aimFork} = this.$store.getters.getDataById(this.dataId);
       this.fatherDataId = fatherFork.id;
-      this.title = "编辑";
+      this.title = "编辑Fragment";
 
       this.label = aimFork.label;
 

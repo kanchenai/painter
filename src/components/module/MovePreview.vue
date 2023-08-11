@@ -65,7 +65,6 @@ export default {
 
       if (referLine) {
         let obj = viewUtils.correctMoveView(left - fatherLeft, top - fatherTop, width, height, referLine);
-        console.log(obj)
         left = obj.left + fatherLeft;
         top = obj.top + fatherTop;
       }
