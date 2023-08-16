@@ -18,8 +18,9 @@
     </el-form>
     <group-config ref="groupConfig" v-if="type=='group'"></group-config>
     <frame-config ref="frameConfig" v-if="type=='frame'"></frame-config>
-    <focus-config ref="focusConfig" v-if="type=='focus'"></focus-config>
+    <focus-config ref="focusConfig" v-if="type=='focus'" :father-detail="fatherDetail"></focus-config>
     <button-config ref="buttonConfig" v-if="type=='button'"></button-config>
+    <recycle-config ref="recycleConfig" v-if="type=='recycle'"></recycle-config>
     <base-config ref="baseConfig" v-if="type=='div'||type=='img'" :father-data-id="fatherDataId"
                  :type="type"></base-config>
     <text-config ref="textConfig" v-if="type=='text'"></text-config>
@@ -37,6 +38,7 @@ import FocusConfig from "@/components/focus/FocusConfig.vue";
 import BaseConfig from "@/components/base/BaseConfig.vue";
 import TextConfig from "@/components/text/TextConfig.vue";
 import FrameConfig from "@/components/frame/FrameConfig.vue";
+import RecycleConfig from "@/components/recycle/RecycleConfig.vue";
 
 export default {
   name: "DialogViewEditor",
@@ -73,7 +75,8 @@ export default {
           type: "text"
         },
       ];
-      if (this.editType == "edit" || this.fatherDetail.type == "group" || this.fatherDetail.type == "page" || this.fatherDetail.type == "fragment") {
+
+      if (this.editType == "edit" || this.fatherDetail.type == "group" || this.fatherDetail.type == "page" || this.fatherDetail.type == "fragment" || this.fatherDetail.type == "recycle") {
         value = value.concat([
           {
             label: "Group",
@@ -83,10 +86,6 @@ export default {
             label: "Focus",
             type: "focus"
           },
-          // {
-          //   label: "Button",
-          //   type: "button"
-          // }
         ])
       }
 
@@ -94,6 +93,13 @@ export default {
         value.push({
           label: "Frame",
           type: "frame"
+        })
+      }
+
+      if (this.fatherDetail.type == "page" || this.fatherDetail.type == "group" || this.fatherDetail.type == "fragment") {
+        value.push({
+          label: "Recycle",
+          type: "recycle"
         })
       }
 
@@ -135,7 +141,7 @@ export default {
 
       let nameUsable = this.nameUsable();
 
-      if(!nameUsable){
+      if (!nameUsable) {
         this.$message.error("FrameView控件名重复！")
         return;
       }
@@ -163,6 +169,9 @@ export default {
           break;
         case "button":
           data = this.$refs.buttonConfig.getData();
+          break;
+        case "recycle":
+          data = this.$refs.recycleConfig.getData();
           break;
         case "img":
         case "div":
@@ -201,6 +210,9 @@ export default {
           case "button":
             this.$refs.buttonConfig.setData(detail);
             break;
+          case "recycle":
+            this.$refs.recycleConfig.setData(detail);
+            break;
           case "img":
           case "div":
             this.$refs.baseConfig.setData(detail);
@@ -214,7 +226,7 @@ export default {
     },
 
     nameUsable() {
-      if(this.type!="frame"){
+      if (this.type != "frame") {
         return true;
       }
 
@@ -246,6 +258,7 @@ export default {
   },
 
   components: {
+    RecycleConfig,
     TextConfig,
     BaseConfig,
     ButtonConfig,

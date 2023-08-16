@@ -3,7 +3,15 @@
     <div class="top-container">
       <div class="title">Page列表</div>
       <div style="float: right;margin-right: 10px;">
-        <el-button class="top-button" size="mini" type="text" @click="addPage">新增Page</el-button>
+        <div style="display: inline-flex;font-size: 12px;">编辑模式</div>
+        <el-switch
+            style="margin-left: 5px;"
+            size="mini"
+            v-model="$store.state.editMode"
+            active-color="#13ce66"
+            inactive-color="#808080">
+        </el-switch>
+        <el-button style="margin-left: 10px;" size="mini" type="text" @click="addPage">新增Page</el-button>
       </div>
     </div>
     <div style="width:100%;height: 1px;background: gray;"></div>
@@ -32,7 +40,7 @@
           <el-button
               type="text"
               size="mini"
-              v-if="getDetailById(data.id).type!='div'&&getDetailById(data.id).type!='img'&&getDetailById(data.id).type!='text'"
+              v-if="showAddBtn(data)"
               @click="addView(data.id)">
             新增
           </el-button>
@@ -91,7 +99,7 @@ export default {
         value = this.$store.state.selectDataIdList[0]
       }
       return value;
-    },
+    }
   },
 
   watch: {
@@ -148,6 +156,11 @@ export default {
     addPage() {
       this.$dialogPageEditor.addShow();
     },
+
+    changeMode() {
+      this.$store.commit("changeMode")
+    },
+
     addView(fatherId) {
       let fatherDetail = this.getDetailById(fatherId);
       if (fatherDetail.type == "frame") {
@@ -324,14 +337,13 @@ export default {
         let flag = false;
         let detail = this.$store.getters.getDetailById(id);
 
-        for(let operateId of this.$store.state.copyDataIdList){
+        for (let operateId of this.$store.state.copyDataIdList) {
           let operateDetail = this.$store.getters.getDetailById(operateId);
-          if(!this.allowOperate(operateDetail,detail,"inner")){
+          if (!this.allowOperate(operateDetail, detail, "inner")) {
             flag = true;
             break;
           }
         }
-
 
 
         return flag;
@@ -355,6 +367,18 @@ export default {
         value = "#ffde00";
       }
       return value;
+    },
+
+    showAddBtn(data) {
+      let flag = true;
+      let id = data.id;
+      let detail = this.getDetailById(id);
+      if (detail.type == 'div' || detail.type == 'img' || detail.type == 'text') {
+        flag = false;
+      } else if (detail.type == 'recycle' && data.children.length != 0) {
+        flag = false;
+      }
+      return flag;
     }
   },
 

@@ -1,6 +1,6 @@
 <template>
   <el-form ref="form" size="mini" label-width="150px">
-    <el-form-item label="焦点" v-if="needFocusSetting">
+    <el-form-item label="焦点效果" v-if="needFocusSetting">
       <el-radio-group style="width: 100%;" v-model="data.props.id">
         <el-radio style="float: left;" :label="'focus'">是</el-radio>
         <el-radio style="float: left;" :label="''">否</el-radio>

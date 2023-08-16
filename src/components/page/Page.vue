@@ -5,6 +5,7 @@
       <div v-for="(child,index) in data.children" :key="index">
         <group-view v-if="getDetailById(child.id).type=='group'" :data="child"></group-view>
         <frame-view v-else-if="getDetailById(child.id).type=='frame'" :data="child"></frame-view>
+        <recycle-view v-else-if="getDetailById(child.id).type=='recycle'" :data="child"></recycle-view>
         <focus-view v-else-if="getDetailById(child.id).type=='focus'" :data="child"></focus-view>
         <text-view v-else-if="getDetailById(child.id).type=='text'" :data="child"></text-view>
         <base-view v-else :data="child"></base-view>
@@ -41,6 +42,7 @@ import BaseView from "@/components/base/BaseView.vue";
 import FocusView from "@/components/focus/FocusView.vue";
 import FrameView from "@/components/frame/FrameView.vue";
 import GroupView from "@/components/group/GroupView.vue";
+import RecycleView from "@/components/recycle/RecycleView.vue";
 
 /**
  * 只用来布局
@@ -272,7 +274,7 @@ export default {
     }
   },
 
-  components: {FrameView, FocusView, TextView, BaseView, GroupView}
+  components: {RecycleView, FrameView, FocusView, TextView, BaseView, GroupView}
 }
 </script>
 <style scoped>

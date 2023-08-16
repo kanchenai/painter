@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:style.left,top:style.top}"></div>
+    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:style.left,top:style.top}" v-if="$store.state.editMode"></div>
     <div class="default-focus" :style="{width:width+'px',height:height+'px',left:(left<3?0:left-3)+'px',top:(top<3?0:top-3)+'px'}"
          v-if="!focus" v-show="selected"></div>
     <div class="focus" :style="style" @dblclick.stop="editView"
@@ -148,6 +148,15 @@ export default {
       let flag = this.$store.getters.isSelected(this.data.id)
       return flag;
     },
+
+    canMove(){
+      let flag = true;
+      if(this.$parent.detail.type == "recycle"){
+        flag = false;
+      }
+
+      return flag;
+    }
   },
 
   watch: {},
@@ -160,10 +169,18 @@ export default {
     mousedown(event) {
       event.stopPropagation();
 
-      this.$viewEffect.mousedown(event, this);
       if (!this.selected) {
         this.$store.commit("selectView", {id: this.data.id});
       }
+
+      let downType = utils.judgeDownType(event, this);
+      if (downType == "move") {
+        if(!this.canMove){
+          return;
+        }
+      }
+
+      this.$viewEffect.mousedown(event, this);
     },
     mousemove(event) {
       let preview = this.$movePreview.preview;

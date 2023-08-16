@@ -13,6 +13,7 @@ let option = {
         painterDataId: 0,
         selectDataIdList: [],
         copyDataIdList: [],
+        editMode: true,//是否为编辑模式
     },
     // 在这里定义 mutations 修改状态的方法
     mutations: {
@@ -41,6 +42,10 @@ let option = {
             let {aimFork} = this.getters.getDataById(id);
 
             aimFork.label = label;
+        },
+
+        changeMode(state){
+            state.editMode = !state.editMode;
         },
 
         addView(state, {fatherId, data, name}) {

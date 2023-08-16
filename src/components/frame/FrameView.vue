@@ -4,7 +4,7 @@
          @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup">
       <fragment v-if="data.children.length>0" :data="data.children[detail.other.selectedIndex]"></fragment>
     </div>
-    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}"></div>
+    <div class="bg" :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px',background:selected?'gray':''}" v-if="$store.state.editMode"></div>
 
     <div class="position" :style="{left:left+2+'px',top:top+2+'px'}" v-if="selected">
       {{ 'l:' + left + ',' + 't:' + top }}
