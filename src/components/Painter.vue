@@ -110,8 +110,6 @@ export default {
 
   created() {
     window.painter = this;
-
-    this.$store.commit("addPage","home")
   },
 
   mounted() {
