@@ -6,12 +6,12 @@
       <div v-if="!!adapterData">
         <div>
           <group-view v-if="getDetailById(adapterData.id).type=='group'" :data="adapterData"></group-view>
-          <focus-view ref="focusView" v-else-if="getDetailById(adapterData.id).type=='focus'"
+          <focus-view v-else-if="getDetailById(adapterData.id).type=='focus'"
                       :data="adapterData"></focus-view>
           <text-view v-else-if="getDetailById(adapterData.id).type=='text'" :data="adapterData"></text-view>
           <base-view v-else :data="adapterData"></base-view>
         </div>
-        <virtual-view v-for="(item,index) in parseInt(detail.other.dataNum)" :key="index" :detail="adapterDetail"
+        <virtual-view v-for="(item,index) in parseInt(detail.other.dataNum)-1" :key="index" :detail="adapterDetail"
                       :position="getPositionBy(item)"></virtual-view>
       </div>
     </div>
@@ -31,6 +31,7 @@
 </template>
 <script>
 
+import GroupView from "@/components/group/GroupView.vue";
 import TextView from "@/components/text/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
 import FocusView from "@/components/focus/FocusView.vue";
@@ -140,8 +141,8 @@ export default {
       }
 
       if (this.adapterDetail) {
-        value.width = this.adapterDetail.style.width;
-        value.height = this.adapterDetail.style.height;
+        value.width = parseInt(this.adapterDetail.style.width);
+        value.height = parseInt(this.adapterDetail.style.height);
       }
 
       let disLeft = this.adapterDisLeft;
@@ -151,9 +152,14 @@ export default {
         value.height -= (2 * disTop);
       }
 
-      let margin = parseInt(this.detail.props["view-margin"]);
-      value.width += (2 * margin);
-      value.height += (2 * margin);
+      let margin = this.detail.props["view-margin"];
+      if(margin){
+        margin = parseInt(margin)
+        value.width += (2 * margin);
+        value.height += (2 * margin);
+      }
+
+      // console.log("adapterSeatSize",value)
 
       return value;
     },
@@ -165,7 +171,9 @@ export default {
         let width = this.adapterFocus.style.width;
         value = (this.adapterDetail.style.width() - width) / 2;
       } else {
-        value = -3;
+        if (this.adapterDetail.type == "focus") {
+          value = -3;
+        }
       }
 
       return value;
@@ -178,7 +186,9 @@ export default {
         let height = this.adapterFocus.style.height;
         value = (this.adapterDetail.style.height - height) / 2;
       } else {
-        value = -3;
+        if (this.adapterDetail.type == "focus") {
+          value = -3;
+        }
       }
 
       return value;
@@ -311,7 +321,7 @@ export default {
     }
   },
 
-  components: {VirtualView, FocusView, TextView, BaseView}
+  components: {GroupView, VirtualView, FocusView, TextView, BaseView}
 }
 </script>
 <style scoped>

@@ -46,6 +46,7 @@ import TextView from "@/components/text/TextView.vue";
 import BaseView from "@/components/base/BaseView.vue";
 import FocusView from "@/components/focus/FocusView.vue";
 import viewUtils from "@/utils/viewUtils";
+import utils from "@/utils/viewUtils";
 
 /**
  * 只用来布局
@@ -198,6 +199,15 @@ export default {
       let flag = this.$store.getters.isSelected(this.data.id)
       return flag;
     },
+
+    canMove(){
+      let flag = true;
+      if(this.$parent.detail.type == "recycle"){
+        flag = false;
+      }
+
+      return flag;
+    }
   },
 
   mounted() {
@@ -223,8 +233,16 @@ export default {
         return;
       }
       event.stopPropagation();
-      this.$viewEffect.mousedown(event, this);
       this.$store.commit("selectView", {id: this.data.id});
+
+      let downType = utils.judgeDownType(event, this);
+      if (downType == "move") {
+        if(!this.canMove){
+          return;
+        }
+      }
+
+      this.$viewEffect.mousedown(event, this);
     },
     mousemove(event) {
       event.stopPropagation();

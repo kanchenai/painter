@@ -16,14 +16,13 @@
         <el-input v-model="name" placeholder="请输入控件名"></el-input>
       </el-form-item>
     </el-form>
-    <group-config ref="groupConfig" v-if="type=='group'"></group-config>
+    <group-config ref="groupConfig" v-if="type=='group'" :father-detail="fatherDetail"></group-config>
     <frame-config ref="frameConfig" v-if="type=='frame'"></frame-config>
     <focus-config ref="focusConfig" v-if="type=='focus'" :father-detail="fatherDetail"></focus-config>
-    <button-config ref="buttonConfig" v-if="type=='button'"></button-config>
     <recycle-config ref="recycleConfig" v-if="type=='recycle'"></recycle-config>
-    <base-config ref="baseConfig" v-if="type=='div'||type=='img'" :father-data-id="fatherDataId"
+    <base-config ref="baseConfig" v-if="type=='div'||type=='img'" :father-detail="fatherDetail"
                  :type="type"></base-config>
-    <text-config ref="textConfig" v-if="type=='text'"></text-config>
+    <text-config ref="textConfig" v-if="type=='text'" :father-detail="fatherDetail"></text-config>
     <div style="width: 100%">
       <el-button type="primary" size="mini" @click="submit">确认</el-button>
       <el-button size="mini" @click="visible=false">取消</el-button>

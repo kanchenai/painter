@@ -3,7 +3,7 @@
     <el-form-item label="显示文本">
       <el-input v-model="data.props.value" placeholder="请输入控件名"></el-input>
     </el-form-item>
-    <el-form-item label="坐标(left,top)">
+    <el-form-item label="坐标(left,top)" v-if="showPosition">
       <el-col :span="11">
         <el-input v-model="data.style.left" type="number" placeholder="left"></el-input>
       </el-col>
@@ -45,6 +45,9 @@
 
 export default {
   name: "TextConfig",
+  props: {
+    fatherDetail: Object
+  },
   data() {
     return {
       data: {
@@ -64,6 +67,17 @@ export default {
           value: ""
         }
       },
+    }
+  },
+
+  computed: {
+    showPosition() {
+      let flag = true;
+      if (this.fatherDetail && this.fatherDetail.type == "recycle") {
+        flag = false;
+      }
+
+      return flag;
     }
   },
 

@@ -1,6 +1,6 @@
 <template>
   <el-form ref="form" size="mini" label-width="150px">
-    <el-form-item label="坐标(left,top)">
+    <el-form-item label="坐标(left,top)" v-if="showPosition">
       <el-col :span="11">
         <el-input v-model="data.style.left" type="number" placeholder="left"></el-input>
       </el-col>
@@ -34,6 +34,9 @@
 
 export default {
   name: "GroupConfig",
+  props: {
+    fatherDetail: Object
+  },
   data() {
     return {
       data: {
@@ -48,6 +51,17 @@ export default {
           firstFocus: false
         }
       },
+    }
+  },
+
+  computed: {
+    showPosition() {
+      let flag = true;
+      if (this.fatherDetail && this.fatherDetail.type == "recycle") {
+        flag = false;
+      }
+
+      return flag;
     }
   },
 

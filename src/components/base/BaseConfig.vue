@@ -6,7 +6,7 @@
         <el-radio style="float: left;" :label="''">否</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="坐标(left,top)" v-if="!data.props.id">
+    <el-form-item label="坐标(left,top)" v-if="!data.props.id&&showPosition">
       <el-col :span="11">
         <el-input v-model="data.style.left" type="number" placeholder="left"></el-input>
       </el-col>
@@ -59,7 +59,7 @@ export default {
   name: "ButtonConfig",
   props: {
     type: String,
-    fatherDataId: String
+    fatherDetail: Object
   },
   data() {
     return {
@@ -82,15 +82,20 @@ export default {
   },
 
   computed: {
-    fatherDetail() {
-      return this.$store.getters.getDetailById(this.fatherDataId);
-    },
-
     needFocusSetting() {
       let flag = false;
       let fatherType = this.fatherDetail.type;
       if (fatherType == "focus" || fatherType == "button") {
         flag = true;
+      }
+
+      return flag;
+    },
+
+    showPosition() {
+      let flag = true;
+      if (this.fatherDetail && this.fatherDetail.type == "recycle") {
+        flag = false;
       }
 
       return flag;

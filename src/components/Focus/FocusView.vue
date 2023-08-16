@@ -173,12 +173,7 @@ export default {
         this.$store.commit("selectView", {id: this.data.id});
       }
 
-      let downType = utils.judgeDownType(event, this);
-      if (downType == "move") {
-        if(!this.canMove){
-          return;
-        }
-      }
+
 
       this.$viewEffect.mousedown(event, this);
     },

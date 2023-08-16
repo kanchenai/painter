@@ -1,6 +1,6 @@
 <template>
-  <div style="pointer-events: none;">
-    <div style="position: absolute;overflow: hidden;" :style="style"></div>
+  <div style="pointer-events: none;" :style="{left:left+'px',top:top+'px'}">
+    <div style="position: absolute;overflow: hidden;" :style="{width:width+'px',height:height+'px'}"></div>
 
     <div class="bg"
          :style="{width:width-2+'px',height:height-2+'px',left:left+'px',top:top+'px'}"></div>
@@ -60,16 +60,6 @@ export default {
       if(this.position){
         value = this.position.top;
       }
-
-      return value;
-    },
-    style() {
-      let value = {}
-
-      value.width = this.width + "px";
-      value.height = this.height + "px";
-      value.left = this.left + "px";
-      value.top = this.top + "px";
 
       return value;
     },
