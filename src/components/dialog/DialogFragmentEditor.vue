@@ -21,7 +21,6 @@
 </template>
 <script>
 import Vue from "vue";
-import viewUtils from "@/utils/viewUtils";
 
 export default {
   name: "DialogFragmentEditor",

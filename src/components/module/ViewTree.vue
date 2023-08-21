@@ -217,7 +217,7 @@ export default {
 
     currentChange(data, node) {
       let detail = this.$store.getters.getDetailById(data.id);
-      if (detail.type == "page") {
+      if (detail.type == "page" || detail.type == "dialog") {
         this.$emit("changePage", data.id);
         this.$store.commit("selectView", {id: data.id});
       } else {
@@ -257,32 +257,50 @@ export default {
       let flag = true;
 
       if (type == "inner") {
-        if (draggingDetail.type == "page") {
+        if (dropDetail.type == "div" || dropDetail.type == "img" || dropDetail.type == "text") {
           flag = false;
-        } else if (dropDetail.type == "focus") {
-          if (draggingDetail.type == "div" || draggingDetail.type == "img" || draggingDetail.type == "text") {
-            flag = true;
-          } else {
+        }else{
+          if (draggingDetail.type == "page") {
             flag = false;
-          }
-        } else {
-          if (dropDetail.type == "frame" && draggingDetail.type != "fragment") {
+          }else if(draggingDetail.type == "dialog"){
             flag = false;
-          } else {
-            if (dropDetail.type == "div" || dropDetail.type == "img" || dropDetail.type == "text") {
+          } else if(draggingDetail.type == "frame"){
+            if(dropDetail.type != "page"){
               flag = false;
+            }
+          } else if(draggingDetail.type == "fragment"){
+            if(dropDetail.type != "frame"){
+              flag = false;
+            }
+          }else {
+            if (dropDetail.type == "focus") {
+              if (draggingDetail.type == "div" || draggingDetail.type == "img" || draggingDetail.type == "text") {
+                flag = true;
+              } else {
+                flag = false;
+              }
+            } else {
+              if (dropDetail.type == "frame" && draggingDetail.type != "fragment") {
+                flag = false;
+              }
             }
           }
         }
       } else if (type == "none") {
         flag = false;
       } else {
-        if (draggingDetail.type == "page") {
-          if (dropDetail.type == "page") {
+        if (draggingDetail.type == "page" || draggingDetail.type == "dialog") {
+          if (dropDetail.type == "page" || draggingDetail.type == "dialog") {
             flag = true;
           }
         } else {
-          if (dropDetail.type != "page") {
+          if (dropDetail.type == "fragment") {
+            if(draggingDetail.type == "fragment"){
+              flag = true;
+            }else{
+              flag = false;
+            }
+          }else{
             flag = true;
           }
         }

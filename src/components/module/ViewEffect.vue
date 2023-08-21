@@ -3,7 +3,8 @@
     <div style="width: 1px;height: 100%;min-height: 720px;float: left;background: gray;"></div>
     <div style="position: relative;" v-if="data" @mouseup="mouseup" @mouseenter="mouseIn=true"
          @mouseleave="mouseleave">
-      <page :data="data"></page>
+      <page v-if="detail.type=='page'" :data="data"></page>
+      <dialog-view v-if="detail.type=='dialog'" :data="data"></dialog-view>
     </div>
   </div>
 
@@ -12,6 +13,7 @@
 import Page from "@/components/page/Page.vue";
 import Vue from "vue";
 import viewUtils from "@/utils/viewUtils";
+import DialogView from "@/components/page/DialogView.vue";
 
 export default {
   name: "ViewEffect",
@@ -39,6 +41,14 @@ export default {
           value = aimFork;
         }
       }
+      return value;
+    },
+    detail(){
+      let value = null;
+      if(this.data){
+        value = this.$store.getters.getDetailById(this.data.id);
+      }
+
       return value;
     }
   },
@@ -188,7 +198,7 @@ export default {
     }
   },
 
-  components: {Page},
+  components: {DialogView, Page},
 }
 </script>
 <style scoped>

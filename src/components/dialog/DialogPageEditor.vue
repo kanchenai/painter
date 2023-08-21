@@ -5,8 +5,15 @@
       v-if="visible"
       width="50%">
     <el-form ref="form" size="mini" label-width="150px">
+      <el-form-item label="页面类型">
+        <el-select style="width: 100%" v-model="type" :disabled="editType=='edit'" :clearable="true" :filterable="true"
+                   placeholder="页面类型">
+          <el-option v-for="(item,index) in viewTypeList" :key="index" :label="item.label"
+                     :value="item.type"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="页面名">
-        <el-input ref="labelInput" v-model="label"></el-input>
+        <el-input ref="labelInput" v-model="label" placeholder="页面名"></el-input>
       </el-form-item>
       <!--      <el-form-item label="背景颜色">-->
       <!--        <el-color-picker style="float: left;" v-model="data.style.background"></el-color-picker>-->
@@ -29,14 +36,33 @@ export default {
       visible: false,
       title: "",
       editType: "",
+      type: "",
       label: "",
 
       dataId: "",
+
+
+    }
+  },
+
+  computed: {
+    viewTypeList() {
+      let value = [
+        {
+          label: "Page",
+          type: "page"
+        },
+        {
+          label: "Dialog",
+          type: "dialog"
+        }
+      ];
+
+      return value;
     }
   },
 
   created() {
-    window.dialogPageEditor = this;
     Vue.prototype.$dialogPageEditor = this;
   },
 
@@ -45,11 +71,8 @@ export default {
       this.visible = true;
       this.editType = "add";
       this.title = "新增页面";
+      this.type = "";
       this.label = "";
-
-      this.$nextTick(() => {
-        this.$refs.labelInput.focus();
-      })
     },
 
     editShow(id) {
@@ -58,24 +81,21 @@ export default {
       this.dataId = id;
       this.title = "编辑页面";
       let {aimFork} = this.$store.getters.getDataById(id);
-
+      let detail = this.$store.getters.getDetailById(id);
       this.label = aimFork.label;
-
-      this.$nextTick(() => {
-        this.$refs.labelInput.focus();
-      })
+      this.type = detail.type;
     },
 
     submit() {
       let nameUsable = this.nameUsable();
 
-      if(!nameUsable){
+      if (!nameUsable) {
         this.$message.error("Page名重复！")
         return;
       }
 
       if (this.editType == "add") {
-        this.$store.commit("addPage", this.label);
+        this.$store.commit("addPage", {type: this.type, label: this.label});
         if (!this.$parent.currentPageId) {
           if (this.$store.state.viewTreeData.length > 0) {
             this.$parent.currentPageId = this.$store.state.viewTreeData[0].id;
@@ -91,6 +111,11 @@ export default {
     nameUsable() {
       let itemList = this.$store.state.viewTreeData.filter(item => {
         let flag = false;
+
+        let detail = this.$store.getters.getDetailById(item.id);
+        if (detail.type != this.type) {
+          return flag;
+        }
 
         if (this.editType == "add") {
           if (item.label.toUpperCase() == this.label.toUpperCase()) {

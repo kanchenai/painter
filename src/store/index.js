@@ -17,7 +17,7 @@ let option = {
     },
     // 在这里定义 mutations 修改状态的方法
     mutations: {
-        addPage(state, label) {
+        addPage(state, {type,label}) {
             let id = state.painterDataId + "";
             state.viewTreeData.push({
                 id,
@@ -26,13 +26,16 @@ let option = {
             })
 
             let data = {
-                type: "page",
+                type,
                 style: {
                     width: 1280,
                     height: 720,
-                    background: "black"
                 },
             }
+            if(type == "page"){
+                data.style.background = "black";
+            }
+
             Vue.set(state.viewDetailObj, id, data)
 
             state.painterDataId++;

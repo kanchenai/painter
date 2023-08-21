@@ -230,7 +230,6 @@ export default {
         let left = rect.left;
         let top = rect.top;
         this.$movePreview.mousemove(event, this.referLine, left, top);
-        return;
       } else {
         this.$viewEffect.mousemove(event);
       }
