@@ -30,12 +30,8 @@
           @node-drag-end="nodeDragEnd"
           :allow-drop="allowDrop">
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span style="max-width: 150px;overflow:hidden;" v-if="getDetailById(data.id).type!='fragment'">{{
-            node.label
-          }}</span>
-        <span style="max-width: 50px;overflow:hidden;" v-else :style="{color:fragmentLabelColor(node)}">{{
-            node.label
-          }}</span>
+        <span style="max-width: 150px;overflow:hidden;" v-if="getDetailById(data.id).type!='fragment'">{{node.label }}</span>
+        <span style="max-width: 50px;overflow:hidden;" v-else :style="{color:fragmentLabelColor(node)}">{{node.label }}</span>
         <span>
           <el-button
               type="text"
